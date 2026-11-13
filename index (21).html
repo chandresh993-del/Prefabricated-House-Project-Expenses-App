@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0A1F44">
+<title>Entrix House Construction App</title>
+<meta name="application-name" content="Entrix House Construction App">
+<meta name="apple-mobile-web-app-title" content="Entrix Construction">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+:root{
+  --navy:#0A1F44; --amber:#F2A900; --amber-dim:#C88C05;
+  --paper:#F4F6F9; --card:#fff; --ink:#16202E; --muted:#6B7789; --line:#DDE3EC;
+  --green:#1B7F5A; --red:#C0392B; --blue:#2F6FDE;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--paper);color:var(--ink);
+  font-size:15px;line-height:1.45;padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+.num{font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+button,input,select,textarea{font-family:inherit;font-size:16px}
+button{cursor:pointer;border:none;background:none;color:inherit}
+
+header{background:var(--navy);color:#fff;padding:calc(12px + env(safe-area-inset-top)) 16px 12px;
+  display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:20}
+.brand{font-weight:800;letter-spacing:.16em;font-size:13px}
+.brand span{color:var(--amber)}
+header .sub{font-size:11px;color:#9FB0CC;letter-spacing:.04em;margin-top:1px}
+.whoami{margin-left:auto;text-align:right;font-size:11px;color:#9FB0CC}
+.whoami b{display:block;color:#fff;font-size:12px}
+.sync{display:inline-block;width:7px;height:7px;border-radius:50%;background:#4B5C78;margin-right:5px;vertical-align:middle}
+.sync.on{background:#3ED598}.sync.off{background:var(--amber)}
+
+main{padding:14px 14px 24px;max-width:680px;margin:0 auto}
+.view{display:none}.view.active{display:block}
+
+nav{position:fixed;left:0;right:0;bottom:0;z-index:20;background:#fff;border-top:1px solid var(--line);
+  display:grid;grid-template-columns:repeat(4,1fr);padding-bottom:env(safe-area-inset-bottom)}
+nav button{padding:10px 4px 11px;color:var(--muted);font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+nav button .ic{display:block;font-size:20px;line-height:1.25;font-weight:400}
+nav button.on{color:var(--navy)}nav button.on .ic{color:var(--amber)}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px;margin-bottom:12px}
+.eyebrow{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:800;margin:18px 2px 8px}
+.eyebrow:first-child{margin-top:0}
+label{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 5px}
+input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);outline:none}
+input:focus,select:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(10,31,68,.09)}
+.field{margin-bottom:13px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rupee{position:relative}.rupee .c{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-weight:800;color:var(--muted)}
+.rupee input{padding-left:30px;font-weight:800}
+.btn{display:block;width:100%;padding:14px;border-radius:10px;background:var(--amber);color:#241900;font-weight:800;letter-spacing:.04em;text-transform:uppercase;font-size:13px}
+.btn:active{background:var(--amber-dim)}
+.btn.dark{background:var(--navy);color:#fff}
+.btn.ghost{background:#fff;border:1px solid var(--line);color:var(--navy)}
+.btn.danger{background:#fff;border:1px solid #EBC3BE;color:var(--red)}
+.btn.danger.armed{background:var(--red);color:#fff}
+.btn.sm{padding:10px;font-size:12px}
+.btn:disabled{opacity:.5}
+.mini{width:auto;display:inline-block;padding:8px 13px;font-size:11px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px}
+
+/* dashboard */
+.grand{background:var(--navy);color:#fff;border-radius:14px;padding:18px;margin-bottom:12px}
+.grand.win{background:linear-gradient(135deg,#0A1F44,#14472F)}
+.grand.lose{background:linear-gradient(135deg,#0A1F44,#4A1E1A)}
+.grand .k{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#9FB0CC;font-weight:700}
+.grand .v{font-size:34px;font-weight:800;letter-spacing:-.02em;margin-top:3px}
+.grand .v.g{color:#3ED598}.grand .v.r{color:#FF8A7A}
+.grand .split{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:12px 16px;margin-top:14px;padding-top:13px;border-top:1px solid rgba(255,255,255,.15);font-size:12px;color:#C9D6EA}
+.grand .split b{display:block;color:#fff;font-size:16px;font-weight:800;margin-top:1px}
+
+/* tools */
+.tools{display:flex;gap:8px;margin:2px 0 12px;align-items:center}
+.tools input{flex:1}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{padding:7px 12px;border:1.5px solid var(--line);border-radius:99px;background:#fff;color:var(--muted);font-size:12px;font-weight:800;letter-spacing:.02em;white-space:nowrap}
+.chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* sites */
+.site{background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px;margin-bottom:11px;width:100%;text-align:left;display:block}
+.site:active{background:#FAFBFD}
+.site .top{display:flex;gap:8px;align-items:flex-start}
+.site h3{margin:0;font-size:16px;font-weight:800;flex:1}
+.site .meta{font-size:12px;color:var(--muted);margin-top:3px}
+.badge{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:99px;background:#E6F4EE;color:var(--green);white-space:nowrap}
+.badge.done{background:#E9ECF2;color:var(--muted)}
+.figs{display:flex;justify-content:space-between;align-items:flex-end;margin-top:12px;gap:10px}
+.figs .big{font-size:20px;font-weight:800}
+.figs small{display:block;font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.03em}
+.pos{color:var(--green)}.neg{color:var(--red)}
+.bar{height:7px;background:#E6EAF1;border-radius:99px;overflow:hidden;margin-top:11px}
+.bar i{display:block;height:100%;background:var(--amber);border-radius:99px;transition:width .3s}
+.bar.full i{background:var(--green)}
+.barlbl{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-weight:700;margin-top:5px}
+
+.tot{display:flex;justify-content:space-between;gap:10px;padding:10px 2px;border-bottom:1px solid var(--line);font-size:14px}
+.tot:last-child{border-bottom:none}
+.tot b{font-weight:800;white-space:nowrap}
+.tot.h{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:800;padding-top:0}
+.tot.key{background:#F7F9FC;margin:2px -15px -15px;padding:12px 17px;border-radius:0 0 12px 12px;border-bottom:none}
+
+.cat{display:grid;grid-template-columns:96px 1fr auto;gap:9px;align-items:center;font-size:12.5px;padding:5px 0}
+.cat .b{height:8px;background:#E6EAF1;border-radius:99px;overflow:hidden}
+.cat .b i{display:block;height:100%;border-radius:99px}
+
+/* ledger */
+.ent{display:flex;gap:11px;padding:12px 2px;border-bottom:1px solid var(--line);align-items:flex-start}
+.ent:last-child{border-bottom:none}
+.ent .dot{width:9px;height:9px;border-radius:50%;margin-top:6px;flex:none}
+.ent .body{flex:1;min-width:0}
+.ent .t1{font-weight:700;font-size:14px}
+.ent .t2{font-size:11.5px;color:var(--muted);margin-top:2px;word-break:break-word}
+.ent .amt{font-weight:800;white-space:nowrap}
+.ent .del{color:var(--red);font-size:11px;font-weight:700;margin-top:5px}
+.ent .del.armed{background:var(--red);color:#fff;padding:2px 7px;border-radius:5px}
+
+.empty{text-align:center;color:var(--muted);padding:32px 16px;font-size:13.5px}
+.empty b{display:block;color:var(--ink);font-size:15px;margin-bottom:5px}
+.hint{font-size:12px;color:var(--muted);background:#F0F4FB;border:1px solid #DCE5F3;border-radius:8px;padding:10px 12px;margin-top:12px;line-height:1.5}
+.hint b{color:var(--navy)}
+.banner{background:#FFF6E0;border:1px solid #F0DCA8;color:#6B5310;font-size:12.5px;padding:10px 12px;border-radius:10px;margin-bottom:12px}
+
+.seg{display:grid;gap:6px;margin-bottom:14px}
+.seg button{padding:13px 6px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--muted);font-weight:800;font-size:13px;transition:.12s}
+.seg button:active{transform:scale(.98)}
+.seg button.on{background:var(--navy);color:#fff;border-color:var(--navy);box-shadow:0 2px 8px rgba(10,31,68,.22)}
+
+.sw{display:flex;align-items:center;gap:10px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink);font-weight:600;margin:0 0 10px;cursor:pointer}
+.sw input{position:absolute;opacity:0;width:1px;height:1px}
+.sw i{width:40px;height:23px;border-radius:99px;background:#C9D1DD;position:relative;flex:none;transition:.15s}
+.sw i::after{content:'';position:absolute;left:3px;top:3px;width:17px;height:17px;border-radius:50%;background:#fff;transition:.15s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.sw input:checked+i{background:var(--green)}
+.sw input:checked+i::after{left:20px}
+.sw input:focus-visible+i{outline:2px solid var(--amber);outline-offset:2px}
+#gate .gin{font-size:17px;letter-spacing:normal;text-align:left;font-weight:600;padding:14px;margin-bottom:10px}
+#gate .eye{position:absolute;right:8px;top:7px;padding:8px 10px;color:#9FB0CC;font-size:12px;font-weight:700}
+#gate .keep{display:flex;align-items:center;gap:8px;color:#9FB0CC;text-transform:none;letter-spacing:0;font-size:12.5px;font-weight:600;margin:2px 0 0;cursor:pointer;text-align:left}
+#gate .keep input{width:18px;height:18px;padding:0;margin:0;accent-color:var(--amber)}
+.person{padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--line)}
+.wa{background:#25D366;color:#fff;font-weight:800;font-size:13px;letter-spacing:.02em;padding:12px 14px;border-radius:10px}
+.wa:active{background:#1DA851}
+.sharebar{display:flex;align-items:center;gap:8px;background:#E8F8EE;border:1px solid #BFE9CF;border-radius:10px;padding:8px 8px 8px 12px;margin-bottom:10px;font-size:13px;font-weight:700;color:#14613A}
+.sharebar span{flex:1}.sharebar .wa{padding:9px 11px;font-size:12px}.sharebar .x{color:#5E7A69;padding:6px 8px;font-size:16px}
+.wbar .barlbl{margin:9px 0 4px}.wbar .bar{margin-top:0}
+.wcard .wh,.wedit .wh{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.wcard .wh b{display:block;font-size:15.5px}.wcard .wh span{font-size:12.5px;color:var(--muted)}
+.wcard{border-left:4px solid var(--amber)}
+.badge.rate{background:#EEF2F8;color:var(--navy);letter-spacing:.02em;text-transform:none;font-size:11px}
+.wedit{border-left:4px solid var(--navy)}
+.whint{font-size:12px;color:var(--green);font-weight:700;margin-top:-4px}
+.pdfstat{font-size:13px;font-weight:700;color:var(--muted);background:#F4F6F9;border-radius:10px;padding:12px;margin-bottom:12px;display:flex;align-items:center;gap:9px}
+.pdfstat.ok{color:var(--green);background:#E8F8EE}.pdfstat.bad{color:var(--red);background:#FBECEA}
+.spin{width:15px;height:15px;border:2.5px solid #C9D1DD;border-top-color:var(--navy);border-radius:50%;animation:sp .8s linear infinite;flex:none}
+@keyframes sp{to{transform:rotate(360deg)}}
+.wa:disabled{opacity:.45}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.pgrid button{aspect-ratio:1;border-radius:8px;overflow:hidden;background:#E6EAF1;padding:0}
+.pgrid img{width:100%;height:100%;object-fit:cover;display:block}
+#viewer{position:fixed;inset:0;z-index:55;background:#050C1C;color:#fff;display:none;flex-direction:column;padding:calc(10px + env(safe-area-inset-top)) 12px calc(12px + env(safe-area-inset-bottom))}
+#viewer.open{display:flex}
+#viewer .vtop{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#9FB0CC;font-weight:700}
+#viewer .vtop button{font-size:22px;color:#fff;padding:6px 10px}
+#viewer .vimg{flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
+#viewer .vimg img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px}
+#viewer .vcap{padding:10px 2px;font-size:13px}#viewer .vcap b{display:block}#viewer .vcap span{color:#9FB0CC;font-size:12px}
+#viewer .vnav{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+#viewer .vnav button{padding:12px;border-radius:10px;background:rgba(255,255,255,.1);color:#fff;font-weight:800;font-size:13px}
+#viewer .vnav button:disabled{opacity:.3}
+#viewer .vnav #vD{background:rgba(192,57,43,.35)}#viewer .vnav #vD.armed{background:var(--red)}
+.fab{position:fixed;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:25;background:var(--amber);color:#241900;
+  font-weight:800;letter-spacing:.04em;text-transform:uppercase;font-size:13px;padding:15px 20px;border-radius:99px;
+  box-shadow:0 6px 18px rgba(10,31,68,.3);display:none}
+.fab.show{display:block}
+.fab:active{background:var(--amber-dim)}
+
+#sheet{position:fixed;inset:0;z-index:45;background:rgba(10,31,68,.55);display:none;align-items:flex-end;justify-content:center}
+#sheet.open{display:flex}
+#sheetBody{background:#fff;width:100%;max-width:680px;border-radius:18px 18px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom));max-height:92vh;overflow:auto}
+.sheet-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.sheet-h b{font-size:16px}
+.sheet-h button{font-size:20px;color:var(--muted);padding:4px 8px}
+
+.tblwrap{overflow-x:auto;margin:0 -4px}
+table.t{border-collapse:collapse;width:100%;font-size:12.5px;min-width:520px}
+table.t th{background:var(--navy);color:#fff;text-align:right;padding:7px 8px;font-size:11px;letter-spacing:.04em;white-space:nowrap}
+table.t th:first-child,table.t td:first-child{text-align:left}
+table.t td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+table.t tr.tf td{font-weight:800;border-top:1.5px solid var(--navy);border-bottom:none}
+
+#gate{position:fixed;inset:0;background:var(--navy);z-index:50;display:flex;align-items:center;justify-content:center;padding:26px;overflow:auto}
+#gate .box{width:100%;max-width:360px;text-align:center}
+#gate .logo{font-weight:800;letter-spacing:.2em;color:#fff;font-size:18px}#gate .logo span{color:var(--amber)}
+#gate .tag{color:#8C9BB5;font-size:13px;margin:6px 0 26px}
+#gate input{text-align:center;font-size:28px;letter-spacing:.5em;font-weight:800;padding:15px;background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.18);color:#fff}
+#gate .err{color:var(--amber);font-size:12.5px;height:18px;margin:10px 0}
+#gate .who{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.11);border-radius:14px;padding:16px;margin-bottom:12px}
+#gate .who:active{background:rgba(255,255,255,.1)}
+#gate .who .ic{font-size:25px;width:32px;text-align:center;flex:none}
+#gate .who b{display:block;color:#fff;font-size:16px}
+#gate .who span{display:block;color:#8C9BB5;font-size:12px;margin-top:2px}
+#gate .who .ch{margin-left:auto;color:#5E6E8C;font-size:20px}
+#gate .foot{color:#6E7E9C;font-size:11px;margin-top:16px}
+#gate .back{color:#8C9BB5;font-size:13px;font-weight:700;margin-bottom:16px;display:inline-block}
+
+.toast{position:fixed;left:14px;right:14px;bottom:calc(82px + env(safe-area-inset-bottom));background:var(--navy);color:#fff;padding:13px 15px;border-radius:10px;font-size:13.5px;font-weight:600;z-index:60;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none}
+.toast.show{opacity:1;transform:none}.toast.bad{background:var(--red)}
+@media print{ header,nav,main,.toast,.fab,#sheet,#viewer,#gate{display:none!important} #report{display:block!important;padding:6mm} @page{size:A4;margin:14mm} body{background:#fff} }
+#report{display:none}
+.sm2{display:block;font-size:11.5px;color:var(--muted);font-weight:500;margin-top:1px}
+.badge.cr{background:#FBECEA;color:var(--red);vertical-align:1px;margin-left:4px}
+table.mt td:first-child{white-space:normal}
+.wi{padding:11px 0;border-bottom:1px solid var(--line)}.wih{display:flex;justify-content:space-between;gap:10px;font-size:14.5px}
+.wil{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:left;padding:6px 0 4px 16px;font-size:13px;color:#3A4658}.wil small{color:var(--muted)}.wil:active{background:#F4F6F9}
+.wia{font-size:11.5px;font-weight:700;color:var(--blue);padding:6px 0 0 16px}
+.xl{margin-bottom:10px;padding-bottom:10px;border-bottom:1px dashed var(--line)}.xlr{display:grid;grid-template-columns:1fr 1.05fr 1fr 1.35fr;gap:6px;margin-top:6px}.xlr input,.xlr select{padding:11px 7px;font-size:15px}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+</style>
+</head>
+<body>
+
+<div id="gate"><div class="box" id="gateBox"></div></div>
+
+<header>
+  <div>
+    <div class="brand">ENT<span>R</span>IX</div>
+    <div class="sub">House Construction · <span id="verTag">v</span></div>
+  </div>
+  <div class="whoami"><b id="whoName">—</b><span><i class="sync" id="syncDot"></i><span id="syncTxt">…</span></span></div>
+</header>
+
+<main>
+  <section class="view active" id="v-sites">
+    <div id="cfgBanner"></div>
+    <div id="dash"></div>
+    <div class="tools"><input id="q" type="search" placeholder="Search project, client, location, contractor"></div>
+    <div class="chips" id="chips" style="margin-bottom:12px"></div>
+    <div id="siteList"></div>
+    <div id="ownerAdd"></div>
+  </section>
+
+  <section class="view" id="v-detail">
+    <button class="btn ghost sm mini" id="backBtn" style="margin-bottom:12px">← All projects</button>
+    <div id="detailHead"></div>
+    <div class="eyebrow">Site photos</div>
+    <div class="card" id="photoBox"></div>
+    <div class="eyebrow" id="entryHead">Entries</div>
+    <div class="tools"><input id="lq" type="search" placeholder="Search entries — work, detail, supplier, bill"></div>
+    <div class="chips" id="ledChips" style="margin-bottom:10px"></div>
+    <div class="card" id="entryList"></div>
+    <div id="reportBtnWrap"></div>
+  </section>
+
+  <section class="view" id="v-edit">
+    <button class="btn ghost sm mini" id="editBack" style="margin-bottom:12px">← Back</button>
+    <div id="editForm"></div>
+  </section>
+
+  <section class="view" id="v-reports"></section>
+  <section class="view" id="v-people"></section>
+</main>
+
+<button class="fab" id="fab">+ Add entry</button>
+<div id="sheet"><div id="sheetBody"></div></div>
+<div id="viewer" role="dialog" aria-label="Photo"></div>
+
+<nav>
+  <button data-go="sites" class="on"><span class="ic">▦</span>Projects</button>
+  <button data-go="reports" id="repTab"><span class="ic">📈</span>Reports</button>
+  <button data-go="people" id="peopleTab"><span class="ic">👤</span>People</button>
+  <button data-go="lock"><span class="ic">⎋</span>Lock</button>
+</nav>
+
+<div id="report"></div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+/* ═══════════ 1. SETTINGS ═══════════ */
+const APP_VERSION = '1.1';     // ← bump on every change
+const APP_DATE    = '13 Nov 2026';
+const ADMIN_ID   = 'admin';   // Admin user ID — change this
+const ADMIN_PASS = '1234';    // Admin password — change this
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCIoj0grG9a-wwvBQKL6rffl3d4SQHVm5o",
+  authDomain: "project-site-expenses.firebaseapp.com",
+  projectId: "project-site-expenses",
+  storageBucket: "project-site-expenses.firebasestorage.app",
+  messagingSenderId: "603747323761",
+  appId: "1:603747323761:web:4b1c97f158c2dcd33ab0d0"
+};
+/* Own collections, so this app never mixes with the Installation App's data */
+const COL={jobs:'hc_projects',pays:'hc_entries',people:'hc_people',photos:'hc_photos'};
+
+/* Stage of work — every expense is tagged to one */
+const STAGES=['Site preparation / excavation','Piling / foundation','Plinth','Columns / RCC frame','Slab','Staircase','Brickwork','Plaster',
+  'Electrical','Plumbing / sanitary','Flooring / tiles','Doors / windows','Painting / putty','Waterproofing','Fabrication / grill',
+  'Kitchen / interior','Compound wall / gate','Water tank / borewell','Approvals / fees','General / site overhead'];
+
+/* Expense heads → usual unit + items. Add or rename freely; old entries keep working. */
+const HEADS={
+  'Cement':{u:'bag',items:['OPC 53 grade','PPC','White cement']},
+  'Steel / TMT':{u:'kg',items:['TMT 8 mm','TMT 10 mm','TMT 12 mm','TMT 16 mm','TMT 20 mm','Binding wire','Cover blocks']},
+  'Sand':{u:'brass',items:['River sand','Crushed sand (M-sand)','Plaster sand']},
+  'Aggregate / murum':{u:'brass',items:['Gitti 10 mm','Gitti 20 mm','Gitti 40 mm','Murum','Boulder / rubble']},
+  'Bricks / blocks':{u:'nos',items:['Red brick','Fly-ash brick','AAC block','Concrete block']},
+  'RMC / concrete':{u:'cum',items:['RMC M20','RMC M25','RMC M30','Concrete pump']},
+  'Shuttering / centering':{u:'sq ft',items:['Centering plates hire','Props hire','Plywood','Wooden batten','Shuttering oil']},
+  'Electrical':{u:'nos',items:['Wire','Conduit pipe','Switch boxes','Switches / sockets','DB / MCB','Lights','Fans','Earthing material']},
+  'Plumbing / sanitary':{u:'nos',items:['CPVC pipe & fittings','UPVC pipe & fittings','SWR / drainage pipe','Sanitaryware','Taps / CP fittings','Water tank','Chamber covers']},
+  'Tiles / flooring':{u:'sq ft',items:['Floor tiles','Wall tiles','Parking tiles','Granite','Marble','Kota stone','Tile adhesive / grout']},
+  'Doors / windows':{u:'nos',items:['Door frame','Flush door','Main door','Window (aluminium / UPVC)','Glass','Locks & hardware']},
+  'Paint / putty':{u:'ltr',items:['Wall putty','Primer','Interior paint','Exterior paint','Wood / metal paint']},
+  'Waterproofing':{u:'ltr',items:['Waterproofing chemical','Membrane / coating']},
+  'Fabrication / MS work':{u:'kg',items:['MS grill','Main gate','Railing','Staircase','Shed / structure']},
+  'Wood / interior':{u:'nos',items:['Plywood','Laminate','Kitchen trolley / hardware','POP / gypsum']},
+  'Hardware / misc. material':{u:'nos',items:['Nails','Curing pipe','Tools','Safety items']},
+  'Water':{u:'trip',items:['Water tanker','Borewell']},
+  'Labour (daily wages)':{u:'day',items:['Mason','Helper','Bar bender','Carpenter','Electrician','Plumber','Painter','Tile fitter']},
+  'Machinery / equipment':{u:'hr',items:['JCB','Concrete mixer','Vibrator','Crane / hydra','Piling rig','Breaker','Tractor']},
+  'Transport':{u:'trip',items:['Material transport','Debris removal','Loading / unloading']},
+  'Approvals / professional fees':{u:'lump',items:['Building sanction','Architect fee','Structural engineer fee','Electric meter','Water / sewer connection','Soil test']},
+  'Site overhead':{u:'lump',items:['Food / tea','Watchman','Electricity bill','Site office','Pooja / function','Misc.']}
+};
+const CATS=Object.keys(HEADS);
+const UNITS=['nos','ft','mtr','cft','brass','bag','kg','MT','cum','sq ft','r ft','ltr','trip','day','hr','lump'];
+const W_UNITS=['sq ft','r ft','nos','point','brass','cum','kg','day'];
+const CON_CATS=['Labour','Material','Transport','Food','Tools','Misc'];     // a contractor's own expenses
+const PAL=['#F2A900','#2F6FDE','#1B7F5A','#E2674A','#8A5CF6','#5B8DEF','#3FA37A','#F28C6B','#C0392B','#6B7789','#0A1F44','#B8860B'];
+const colIn=list=>k=>PAL[Math.max(0,list.indexOf(k))%PAL.length];
+/* entry types: label for admin / for contractor, dot colour */
+const TYPE = {
+  ourexp  :{a:'Expense',             c:'Expense',               col:'#C0392B', btn:'Expense / purchase'},
+  payment :{a:'Paid to contractor',  c:'Received from company', col:'#F2A900', btn:'Pay contractor'},
+  advance :{a:'Advance taken by contractor', c:'Advance taken', col:'#F2A900', btn:'Advance taken'},
+  expense :{a:'Contractor expense',  c:'My expense',            col:'#2F6FDE', btn:'My expense'},
+  suppay  :{a:'Paid to supplier',    c:'Paid to supplier',      col:'#8A5CF6', btn:'Pay supplier'},
+  received:{a:'Money received',      c:'Money received',        col:'#1B7F5A', btn:'Money received'},
+  progress:{a:'Work done',           c:'Work done',             col:'#0A1F44', btn:'Work done'}
+};
+
+/* ═══════════ 2. Firebase ═══════════ */
+let db=null, LIVE=false, SITES=[], PAYS=[], PEOPLE=[], PHOTOS=[], peopleLoaded=false, unPhotos=null;
+
+async function initDB(){
+  if(!firebaseConfig.apiKey){ demo(); return; }
+  try{
+    const [{initializeApp},fs,auth] = await Promise.all([
+      import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js'),
+      import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js'),
+      import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js')
+    ]);
+    const app=initializeApp(firebaseConfig);
+    db=fs.initializeFirestore(app,{localCache:fs.persistentLocalCache({tabManager:fs.persistentMultipleTabManager()})});
+    window.FS=fs; LIVE=true;
+    try{ await auth.signInAnonymously(auth.getAuth(app)); }catch(e){ banner('Enable Anonymous sign-in in Firebase → Authentication.'); }
+
+    /* includeMetadataChanges: without it Firestore never tells us when the server
+       has confirmed the phone's copy, so the status got stuck on "offline". */
+    const MD={includeMetadataChanges:true};
+    const watch=(name,q,apply)=>fs.onSnapshot(q,MD,s=>{
+      NET[name]={cache:s.metadata.fromCache,pending:s.metadata.hasPendingWrites};
+      if(s.docChanges().length||!NET[name].seen){ NET[name].seen=true; apply(s.docs.map(d=>({id:d.id,...d.data()}))); render(); }
+      netStatus();
+    }, e=>dbErr(e));
+    watch('jobs',fs.query(fs.collection(db,COL.jobs),fs.orderBy('name')), l=>{ SITES=l; });
+    watch('people',fs.query(fs.collection(db,COL.people),fs.orderBy('name')), l=>{ PEOPLE=l; peopleLoaded=true; tryAuto(); checkStillValid(); });
+    watch('payments',fs.query(fs.collection(db,COL.pays),fs.orderBy('date','desc'),fs.limit(10000)), l=>{ PAYS=l; });
+    addEventListener('online',netStatus); addEventListener('offline',netStatus);
+  }catch(e){ sync('err'); noConn(); }
+}
+/* Opened somewhere that blocks Firebase (e.g. the chat preview): say so loudly, everywhere */
+function noConn(){
+  const s=document.createElement('div');
+  s.setAttribute('role','alert');
+  s.style.cssText='position:sticky;top:0;z-index:19;background:#C0392B;color:#fff;font-size:13px;font-weight:600;padding:10px 14px;line-height:1.4';
+  s.innerHTML='⚠ Not connected — nothing here is saved and your data can\'t load. Open the app from your <b>GitHub Pages link</b> in Chrome.';
+  document.querySelector('header').after(s);
+}
+/* Header status: synced (green) · saving… · offline (amber) · not connected */
+const NET={};
+function netStatus(){
+  const v=Object.values(NET);
+  if(!navigator.onLine) return sync('cache');
+  if(!v.length||v.some(x=>x.cache)) return sync('cache');
+  sync(v.some(x=>x.pending)?'saving':'live');
+}
+function dbErr(e){ sync('err'); if(e.code==='permission-denied') banner('Publish the Firestore security rules, then reload.'); }
+function sync(st){ const d=$('syncDot'),t=$('syncTxt');
+  d.className='sync'+(st==='live'||st==='saving'?' on':(st==='cache'||st==='demo')?' off':'');
+  t.textContent=st==='live'?'synced':st==='saving'?'saving…':st==='cache'?'offline':st==='demo'?'demo':'not connected'; }
+function banner(m){ $('cfgBanner').innerHTML='<div class="banner">'+m+'</div>'; }
+function demo(){ SITES=[]; PAYS=[]; PEOPLE=[]; peopleLoaded=true; sync('demo'); banner('<b>Demo mode.</b> Add your Firebase config to save data.'); render(); renderGate(); }
+
+/* ═══════════ 3. State + helpers ═══════════ */
+/* Writes go to the phone's copy instantly and sync to Firebase in the background.
+   We don't wait for the server, so buttons always respond even on a weak signal. */
+function W(p){ Promise.resolve(p).catch(e=>toast('Not saved to Firebase: '+(e.code||e.message),true)); return Promise.resolve(); }
+
+const justMade={};   // projects created on this phone a moment ago (sync may lag)
+let sheetItem='';
+let ME={name:'',role:'owner'}, openId=null, filter='active', query='', ledF='all', ledQ='', sheetT=null, sheetW=null, sheetE=null, sheetSup='',
+    repCon='', repSt='all', draft=null, lastStage='', lastCat='';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>{n=Math.round(Number(n)||0);return (n<0?'−':'')+'₹'+Math.abs(n).toLocaleString('en-IN');};
+const qf=n=>(Math.round((Number(n)||0)*100)/100).toLocaleString('en-IN');   // quantity / rate, up to 2 decimals
+const rs=n=>'₹'+qf(n);
+const today=()=>{const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);};
+const dmy=s=>{const p=String(s||'').split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0].slice(2)}`:(s||'');};
+const site=id=>SITES.find(x=>x.id===id)||{};
+const isOwner=()=>ME.role==='owner';
+const isCon=()=>ME.role==='contractor';
+const tag=t=>(TYPE[t]||{})[isCon()?'c':'a']||t;
+const opt=(list,sel)=>list.map(x=>`<option${x===sel?' selected':''}>${esc(x)}</option>`).join('');
+const withSel=(list,sel)=>sel&&!list.includes(sel)?[sel,...list]:list;
+/* Admin decides per contractor whether he may enter his own expenses */
+const canExp=()=>{ const p=PEOPLE.find(x=>x.id===ME.id)||PEOPLE.find(x=>x.name===ME.name); return !!(p&&p.canExp); };
+function toast(m,bad){const t=$('toast');t.textContent=m;t.className='toast show'+(bad?' bad':'');setTimeout(()=>t.className='toast'+(bad?' bad':''),2600);}
+function arm(b,label,armedLabel){ // two-tap confirm (native confirm() is blocked in some viewers)
+  if(b.dataset.armed==='1') return true;
+  b.dataset.armed='1'; b.textContent=armedLabel; b.classList.add('armed');
+  setTimeout(()=>{ if(b.isConnected){ b.dataset.armed='0'; b.textContent=label; b.classList.remove('armed'); } },4000);
+  return false;
+}
+
+/* ── Project model ──
+   A project (one house) has a contract value (client job) or a budget (own house),
+   and any number of "works", each given to a contractor — rate wise (qty × rate) or lump sum.
+   Everything bought or spent by the company is an 'ourexp' entry tagged with stage + head + item. */
+const same=(a,b)=>String(a||'').trim().toLowerCase()===String(b||'').trim().toLowerCase();
+const CON_TYPES=['payment','advance','expense','progress'];   // entries that belong to one work
+const wid=p=>p.workId||'w0';
+const newWid=()=>'w'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+const WORKS=['Civil / mason work (labour)','Complete civil with material','Centering / shuttering','Bar bending','Brickwork & plaster',
+  'Electrical','Plumbing','Tiles / flooring','Painting','POP / false ceiling','Carpentry / doors','Fabrication / grill','Waterproofing',
+  'Excavation / JCB','Piling','Architect / engineer'];
+const worksOf=s=>Array.isArray(s.works)?s.works:[];
+const siteCons=s=>[...new Set(worksOf(s).map(w=>w.contractor).filter(Boolean))];
+const workLabel=w=>[w.work||'Work',w.contractor].filter(Boolean).join(' · ');
+function calcWork(w,rows){
+  const R=rows.filter(p=>CON_TYPES.includes(p.type)&&wid(p)===w.id);
+  const sum=(ty,f='amount')=>R.filter(p=>ty.includes(p.type)).reduce((a,b)=>a+(Number(b[f])||0),0);
+  const perQty=w.basis==='rate', qty=Number(w.qty)||0, rate=Number(w.rate)||0;
+  const contract=perQty?Math.round(rate*qty):(Number(w.amount)||0);
+  const paid=sum(['payment','advance']), conExp=sum(['expense']), done=sum(['progress'],'qty');
+  const earned=perQty?Math.round(Math.min(done,qty)*rate):contract;
+  return {...w,perQty,qty,rate,unit:w.unit||'sq ft',contract,paid,conExp,done,earned,
+    balance:contract-paid, dueNow:earned-paid, conMargin:contract-conExp,
+    pct:qty?Math.min(100,Math.round(done/qty*100)):null};
+}
+/* who = contractor name → only his works · null → all works.
+   A signed-in contractor is ALWAYS limited to his own works. */
+function calc(id,who){
+  if(who===undefined) who=isCon()?ME.name:null;
+  if(isCon()) who=ME.name;
+  const s=site(id), rows=PAYS.filter(p=>p.siteId===id);
+  const all=worksOf(s).map(w=>calcWork(w,rows));
+  const works=who?all.filter(w=>same(w.contractor,who)):all;
+  const T=k=>works.reduce((a,w)=>a+w[k],0), A=k=>all.reduce((a,w)=>a+w[k],0);
+  const sumS=(ty,f)=>rows.filter(p=>p.type===ty&&(!f||f(p))).reduce((a,b)=>a+(Number(b.amount)||0),0);
+  const isClient=s.kind!=='own', value=Number(s.amount)||0, area=Number(s.area)||0;
+  const ourExp=sumS('ourexp'), credit=sumS('ourexp',p=>p.pay==='credit'), supPaid=sumS('suppay'), recd=sumS('received');
+  const allY=A('contract'), allPaid=A('paid');
+  const spent=ourExp+allPaid;          // booked so far: every expense/bill + money given to contractors
+  const committed=ourExp+allY;         // expenses + full value of contractor contracts
+  return {works,isClient,value,area,ourExp,credit,supPaid,supDue:credit-supPaid,recd,spent,committed,allPaid,
+    perSqft:area?spent/area:0, usedPct:value?Math.min(100,Math.round(spent/value*100)):null,
+    contract:T('contract'), paid:T('paid'), conExp:T('conExp'), earned:T('earned'),
+    balance:T('balance'), dueNow:T('dueNow'), conMargin:T('conMargin'),
+    profit:isClient?value-committed:0,   // client job: what is left for us
+    left:isClient?0:value-spent,         // own house: budget not yet spent
+    clientDue:isClient?value-recd:0, count:rows.length};
+}
+const expsOf=id=>PAYS.filter(p=>p.siteId===id&&p.type==='ourexp');
+function group(rows,key){
+  const o={}; rows.forEach(p=>{const k=key(p)||'Other'; o[k]=(o[k]||0)+(Number(p.amount)||0);});
+  return Object.entries(o).sort((a,b)=>b[1]-a[1]);
+}
+const byHead=id=>group(expsOf(id).filter(p=>p.category),p=>p.category);
+const listSum=l=>l.reduce((a,x)=>a+x[1],0);
+/* The cost sheet: work items numbered in the order they were first entered, each with its cost lines */
+function workItems(id){
+  const o=new Map();
+  expsOf(id).slice().sort((a,b)=>(a.createdAt||0)-(b.createdAt||0)).forEach(p=>{
+    const n=String(p.stage||'Other').trim(), k=n.toLowerCase();
+    if(!o.has(k)) o.set(k,{n,total:0,lines:[]});
+    const g=o.get(k); g.total+=Number(p.amount)||0; g.lines.push(p); });
+  return [...o.values()];
+}
+function byConCat(id,who){
+  const ids=new Set(calc(id,who).works.map(w=>w.id));
+  return group(PAYS.filter(p=>p.siteId===id&&p.type==='expense'&&ids.has(wid(p))),p=>p.category);
+}
+/* Quantity bought per item (only entries where a quantity was typed) */
+function matRows(id){
+  const o={}; expsOf(id).forEach(p=>{
+    if(!(Number(p.qty)>0)) return;
+    const item=p.item||p.stage||'Other', k=[item,p.unit].join('|').toLowerCase();
+    const r=o[k]||(o[k]={cat:p.category||'',item,unit:p.unit||'',qty:0,amt:0});
+    r.qty+=Number(p.qty)||0; r.amt+=Number(p.amount)||0; });
+  return Object.values(o).sort((a,b)=>b.amt-a.amt);
+}
+/* Supplier ledger over a set of projects: billed · bought on credit · paid against credit · due */
+function supRows(ids){
+  const o={}; PAYS.forEach(p=>{
+    if(!ids.has(p.siteId)||!p.supplier||(p.type!=='ourexp'&&p.type!=='suppay')) return;
+    const n=String(p.supplier).trim(), k=n.toLowerCase(), a=Number(p.amount)||0;
+    const r=o[k]||(o[k]={n,billed:0,credit:0,paid:0});
+    if(p.type==='ourexp'){ r.billed+=a; if(p.pay==='credit') r.credit+=a; } else r.paid+=a; });
+  return Object.values(o).map(r=>({...r,due:r.credit-r.paid})).sort((a,b)=>b.due-a.due||b.billed-a.billed);
+}
+const allSuppliers=()=>[...new Map(PAYS.filter(p=>p.supplier).map(p=>[String(p.supplier).trim().toLowerCase(),String(p.supplier).trim()])).values()].sort((a,b)=>a.localeCompare(b));
+const canonSup=n=>allSuppliers().find(x=>same(x,n))||String(n||'').trim();
+const sumOf=(list,k,who)=>list.reduce((a,s)=>a+calc(s.id,who)[k],0);
+
+/* ═══════════ 4. Login — user ID + password ═══════════ */
+const SESSION_KEY='entrix-hc-session';
+/* Pure-JS SHA-256 — used when the browser/viewer has no crypto.subtle (in-app viewers, http pages) */
+function sha256js(bytes){
+  const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  const H=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+  const l=bytes.length, n=((l+9+63)>>6)<<6, m=new Uint8Array(n); m.set(bytes); m[l]=0x80;
+  const dv=new DataView(m.buffer); dv.setUint32(n-4,(l*8)>>>0); dv.setUint32(n-8,Math.floor(l/0x20000000));
+  const w=new Uint32Array(64), r=(x,s)=>(x>>>s)|(x<<(32-s));
+  for(let o=0;o<n;o+=64){
+    for(let i=0;i<16;i++) w[i]=dv.getUint32(o+i*4);
+    for(let i=16;i<64;i++){ const a=w[i-15],b=w[i-2]; w[i]=(w[i-16]+(r(a,7)^r(a,18)^(a>>>3))+w[i-7]+(r(b,17)^r(b,19)^(b>>>10)))>>>0; }
+    let [a,b,c,d,e,f,g,h]=H;
+    for(let i=0;i<64;i++){
+      const t1=(h+(r(e,6)^r(e,11)^r(e,25))+((e&f)^(~e&g))+K[i]+w[i])>>>0;
+      const t2=((r(a,2)^r(a,13)^r(a,22))+((a&b)^(a&c)^(b&c)))>>>0;
+      h=g;g=f;f=e;e=(d+t1)>>>0;d=c;c=b;b=a;a=(t1+t2)>>>0;
+    }
+    H[0]=(H[0]+a)>>>0;H[1]=(H[1]+b)>>>0;H[2]=(H[2]+c)>>>0;H[3]=(H[3]+d)>>>0;H[4]=(H[4]+e)>>>0;H[5]=(H[5]+f)>>>0;H[6]=(H[6]+g)>>>0;H[7]=(H[7]+h)>>>0;
+  }
+  return H.map(x=>x.toString(16).padStart(8,'0')).join('');
+}
+async function hash(uid,pass){
+  const data=new TextEncoder().encode('entrix|'+String(uid).trim().toLowerCase()+'|'+pass);
+  try{
+    if(window.crypto&&crypto.subtle){ const b=await crypto.subtle.digest('SHA-256',data);
+      return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join(''); }
+  }catch(e){}
+  return sha256js(data);
+}
+const findUser=uid=>PEOPLE.find(p=>p.role==='contractor'&&p.uid&&p.uid.toLowerCase()===String(uid).trim().toLowerCase());
+const session={
+  get(){ try{ return JSON.parse(localStorage.getItem(SESSION_KEY)||'null'); }catch(e){ return null; } },
+  set(v){ try{ localStorage.setItem(SESSION_KEY,JSON.stringify(v)); }catch(e){} },
+  clear(){ try{ localStorage.removeItem(SESSION_KEY); }catch(e){} }
+};
+function renderGate(){
+  if($('gate').style.display==='none'||$('gateBox').dataset.drawn) return;
+  $('gateBox').dataset.drawn='1';
+  $('gateBox').innerHTML=`
+    <div class="logo">ENT<span>R</span>IX</div>
+    <div class="tag">Entrix House Construction App</div>
+    <div id="loginForm">
+      <input id="lUid" class="gin" placeholder="User ID" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" aria-label="User ID">
+      <div style="position:relative"><input id="lPass" class="gin" type="password" placeholder="Password" autocomplete="current-password" aria-label="Password" style="padding-right:70px">
+        <button type="button" id="lEye" class="eye">Show</button></div>
+      <label class="keep"><input type="checkbox" id="lKeep" checked> Keep me signed in on this phone</label>
+      <div class="err" id="pinErr"></div>
+      <button class="btn" id="pinGo" type="button">Sign in</button>
+    </div>
+    <div class="foot">Ask the Admin for your user ID and password.<br>ENTRIX Innovation · Nagpur · v${APP_VERSION}</div>`;
+  $('lEye').onclick=()=>{ const p=$('lPass'); p.type=p.type==='password'?'text':'password'; $('lEye').textContent=p.type==='password'?'Show':'Hide'; };
+  const go=()=>login($('lUid').value,$('lPass').value,$('lKeep').checked);
+  $('pinGo').addEventListener('click',go);
+  ['lUid','lPass'].forEach(id=>$(id).addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); go(); } }));
+}
+async function login(uid,pass,keep){
+  uid=String(uid||'').trim(); pass=String(pass||'').trim(); const err=$('pinErr');
+  if(!uid||!pass){ err.textContent='Enter user ID and password'; return; }
+  err.textContent='Checking…';
+  /* Admin check first — needs nothing else to work */
+  if(uid.toLowerCase()===ADMIN_ID.toLowerCase() && pass===ADMIN_PASS){
+    let ah=''; try{ ah=await hash(ADMIN_ID,ADMIN_PASS); }catch(e){}
+    if(keep&&ah) session.set({uid:ADMIN_ID,h:ah}); ME={name:'Admin',role:'owner',id:null,h:ah}; unlock(); return; }
+  let h=''; try{ h=await hash(uid,pass); }catch(e){ err.textContent='Sign-in error: '+e.message; return; }
+  if(uid.toLowerCase()===ADMIN_ID.toLowerCase() && pass===ADMIN_PASS){
+    if(keep) session.set({uid:ADMIN_ID,h}); ME={name:'Admin',role:'owner',id:null,h}; unlock(); return; }
+  const p=findUser(uid);
+  if(p && p.passHash && p.passHash===h){
+    if(keep) session.set({uid:p.uid,h}); ME={name:p.name,role:'contractor',id:p.id,h}; unlock(); return; }
+  err.textContent=(LIVE&&!peopleLoaded)?'Still connecting — try again in a moment':'Wrong user ID or password';
+  $('lPass').value='';
+}
+let autoTried=false;
+async function tryAuto(){
+  if(autoTried||$('gate').style.display==='none') return;
+  const s=session.get(); if(!s){ autoTried=true; return; }
+  if(s.uid===ADMIN_ID){ autoTried=true;
+    if(s.h===await hash(ADMIN_ID,ADMIN_PASS)){ ME={name:'Admin',role:'owner',id:null,h:s.h}; unlock(); } else session.clear(); return; }
+  if(LIVE&&!peopleLoaded) return;           // wait for the contractor list
+  autoTried=true;
+  const p=findUser(s.uid);
+  if(p&&p.passHash===s.h){ ME={name:p.name,role:'contractor',id:p.id,h:s.h}; unlock(); } else session.clear();
+}
+/* Admin removed him or reset his password → sign him out at once */
+function checkStillValid(){
+  if(!isCon()) return;
+  const p=PEOPLE.find(x=>x.id===ME.id);
+  if(!p||p.passHash!==ME.h){ session.clear(); location.reload(); }
+  else if(p.name!==ME.name){ ME.name=p.name; $('whoName').textContent=p.name; }
+}
+function logout(){ session.clear(); location.reload(); }
+function unlock(){
+  $('gate').style.display='none'; $('whoName').textContent=ME.name;
+  $('peopleTab').style.display=isOwner()?'':'none';
+  $('repTab').style.display=isOwner()?'':'none';
+  document.querySelector('nav').style.gridTemplateColumns=`repeat(${isOwner()?4:2},1fr)`;
+  render(); go('sites');
+}
+
+/* ═══════════ 5. Navigation ═══════════ */
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>b.dataset.go==='lock'?logout():go(b.dataset.go));
+function go(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  $('v-'+name).classList.add('active');
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.go===name));
+  $('fab').classList.toggle('show',name==='detail');
+  if(name==='people') renderPeople();
+  if(name==='reports') renderReports();
+  window.scrollTo(0,0);
+}
+$('backBtn').onclick=()=>go('sites');
+$('editBack').onclick=()=>{ openId?showDetail(openId):go('sites'); };
+
+/* ═══════════ 6. Projects list + dashboard ═══════════ */
+function mySites(){ return isCon()?SITES.filter(s=>worksOf(s).some(w=>same(w.contractor,ME.name))):SITES; }
+function visibleSites(){
+  let l=mySites();
+  if(filter!=='all') l=l.filter(s=>(s.status||'active')===filter);
+  if(query) l=l.filter(s=>[s.name,s.client,s.location,...siteCons(s),...worksOf(s).map(w=>w.work)].join(' ').toLowerCase().includes(query));
+  return l;
+}
+$('q').addEventListener('input',e=>{ query=e.target.value.trim().toLowerCase(); renderSites(); });
+$('chips').addEventListener('click',e=>{ const b=e.target.closest('[data-f]'); if(b){ filter=b.dataset.f; renderSites(); } });
+
+function bars(c,max){
+  const ws=c.works.filter(w=>w.pct!==null);
+  return ws.slice(0,max||9).map(w=>`<div class="wbar">
+    <div class="barlbl"><span>${esc(isOwner()?workLabel(w):(w.work||'Work'))}</span><span class="num">${qf(w.done)}/${qf(w.qty)} ${esc(w.unit)} · ${w.pct}%</span></div>
+    <div class="bar${w.pct>=100?' full':''}"><i style="width:${w.pct}%"></i></div></div>`).join('');
+}
+function budgetBar(c){
+  if(c.usedPct===null) return '';
+  const over=c.spent>c.value;
+  return `<div class="wbar"><div class="barlbl"><span>Spent of ${c.isClient?'contract':'budget'}</span><span class="num"${over?' style="color:var(--red)"':''}>${Math.round(c.spent/c.value*100)}%</span></div>
+    <div class="bar"><i style="width:${c.usedPct}%${over?';background:var(--red)':''}"></i></div></div>`;
+}
+function renderSites(){
+  const base=mySites(), list=visibleSites();
+  $('chips').innerHTML=[['active','Ongoing'],['done','Completed'],['all','All']].map(([k,l])=>
+    `<button class="chip${filter===k?' on':''}" data-f="${k}">${l} · ${k==='all'?base.length:base.filter(s=>(s.status||'active')===k).length}</button>`).join('');
+
+  const scope=filter==='all'?base:base.filter(s=>(s.status||'active')===filter);
+  if(!scope.length){ $('dash').innerHTML=''; }
+  else if(isOwner()){
+    const k=key=>sumOf(scope,key), anyClient=scope.some(s=>s.kind!=='own');
+    $('dash').innerHTML=`<div class="grand">
+      <div class="k">Total spent · ${scope.length} project${scope.length>1?'s':''}</div>
+      <div class="v num">${money(k('spent'))}</div>
+      <div class="split">
+        <div>Expenses &amp; purchases<b class="num">${money(k('ourExp'))}</b></div>
+        <div>Paid to contractors<b class="num">${money(k('allPaid'))}</b></div>
+        <div>Supplier dues<b class="num">${money(k('supDue'))}</b></div>
+        <div>Owed to contractors<b class="num">${money(k('balance'))}</b></div>
+        ${anyClient?`<div>Due from clients<b class="num">${money(k('clientDue'))}</b></div>
+        <div>Projected profit<b class="num">${money(k('profit'))}</b></div>`:''}
+      </div></div>`;
+  } else {
+    const bal=sumOf(scope,'balance');
+    $('dash').innerHTML=`<div class="grand">
+      <div class="k">Balance to receive · all your work</div>
+      <div class="v num ${bal>0?'r':'g'}">${money(bal)}</div>
+      <div class="split">
+        <div>Your contracts<b class="num">${money(sumOf(scope,'contract'))}</b></div>
+        <div>Received<b class="num">${money(sumOf(scope,'paid'))}</b></div>
+        <div>Your expenses<b class="num">${money(sumOf(scope,'conExp'))}</b></div>
+      </div></div>`;
+  }
+
+  $('ownerAdd').innerHTML=isOwner()?'<button class="btn dark" id="addSiteBtn">+ Add a project</button>':'';
+  if(isOwner()) $('addSiteBtn').onclick=()=>{ openId=null; showEdit(); };
+
+  if(!list.length){
+    $('siteList').innerHTML=`<div class="empty"><b>${base.length?'No projects match':'No projects yet'}</b>${base.length?'Try another filter.':(isOwner()?'Add your first house project.':'Nothing assigned to you.')}</div>`; return;
+  }
+  $('siteList').innerHTML=list.map(s=>{
+    const c=calc(s.id), done=(s.status||'active')==='done';
+    const meta=isOwner()
+      ? [s.client, s.location, c.area?qf(c.area)+' sq ft':''].filter(Boolean).join(' · ')
+      : [s.client, c.works.map(w=>w.work||'Work').join(', ')].filter(Boolean).join(' · ');
+    const right=isOwner()
+      ? (c.isClient
+        ? `<div style="text-align:right"><div class="num big ${c.profit>=0?'pos':'neg'}">${money(c.profit)}</div><small>projected profit</small></div>`
+        : `<div style="text-align:right"><div class="num big ${c.left>=0?'pos':'neg'}">${c.value?money(c.left):'—'}</div><small>budget left</small></div>`)
+      : `<div style="text-align:right"><div class="num big ${c.balance>0?'neg':'pos'}">${money(c.balance)}</div><small>balance to you</small></div>`;
+    return `<button class="site" data-id="${esc(s.id)}">
+      <div class="top"><h3>${esc(s.name)}</h3><span class="badge${done?' done':''}">${done?'Completed':'Ongoing'}</span></div>
+      <div class="meta">${esc(meta)}</div>
+      ${isOwner()?budgetBar(c):''}
+      ${bars(c,3)}
+      <div class="figs">
+        <div><div class="num big">${money(isOwner()?c.spent:c.contract)}</div><small>${isOwner()?'spent so far':'your contract'}</small></div>
+        ${right}
+      </div>
+    </button>`;
+  }).join('');
+  $('siteList').querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>showDetail(b.dataset.id));
+}
+
+/* ═══════════ 7. One project ═══════════ */
+function showDetail(id){ openId=id; ledF='all'; ledQ=''; $('lq').value=''; photoSig=''; justAdded=[]; watchPhotos(id); go('detail'); renderDetail(); }
+$('lq').addEventListener('input',e=>{ ledQ=e.target.value.trim().toLowerCase(); renderDetail(); });
+
+function catCard(title,list,total,col){
+  if(!list.length) return '';
+  const mx=list[0][1]||1;
+  return `<div class="card"><div class="tot h"><span>${title}</span><span class="num">${money(total)}</span></div>
+    ${list.map(([k,v])=>`<div class="cat"><span>${esc(k)}</span><div class="b"><i style="width:${Math.max(4,v/mx*100)}%;background:${col?col(k):'#6B7789'}"></i></div><b class="num">${money(v)}</b></div>`).join('')}</div>`;
+}
+function matCard(id){
+  const M=matRows(id); if(!M.length) return '';
+  return `<div class="card"><div class="tot h"><span>Material &amp; quantity summary</span></div>
+    <div class="tblwrap"><table class="t mt" style="min-width:0"><tr><th>Item</th><th>Qty</th><th>Avg rate</th><th>Amount</th></tr>
+    ${M.map(r=>`<tr><td>${esc(r.item)}</td><td class="num">${qf(r.qty)} ${esc(r.unit)}</td><td class="num">${rs(r.amt/r.qty)}</td><td class="num">${money(r.amt)}</td></tr>`).join('')}</table></div></div>`;
+}
+function sheetCard(id,total){
+  const L=workItems(id);
+  if(!L.length) return '<div class="card empty" style="padding:18px"><b>No cost recorded yet</b>Tap “+ Add entry”, type the work and its costs — just like your notes.</div>';
+  return `<div class="card"><div class="tot h"><span>Cost sheet · ${L.length} work item${L.length>1?'s':''}</span><span class="num">${money(total)}</span></div>
+    ${L.map((g,i)=>`<div class="wi"><div class="wih"><b>${i+1}) ${esc(g.n)}</b><b class="num">${money(g.total)}</b></div>
+      ${g.lines.map(p=>`<button class="wil" data-ed="${esc(p.id)}"><span>${esc(p.item||g.n)}${qtyTxt(p)?` <small>${esc(qtyTxt(p))}</small>`:''}${p.pay==='credit'?' <span class="badge cr">Credit</span>':''}</span><span class="num">${money(p.amount)}</span></button>`).join('')}
+      <button class="wia" data-addto="${esc(g.n)}">+ add cost to this work</button></div>`).join('')}
+    <div class="tot key"><span><b>Total</b></span><b class="num">${money(total)}</b></div></div>
+    <button class="wa" id="waSheet" style="width:100%;margin-bottom:12px">${WA_ICON} Share cost sheet on WhatsApp</button>`;
+}
+/* Cost sheet as plain text, in the same style as handwritten notes */
+function shareSheet(id){
+  const s=site(id), L=workItems(id), n=x=>Math.round(Number(x)||0).toLocaleString('en-IN');
+  const txt=`*${s.name} — cost sheet* (${dmy(today())})\n\n`+L.map((g,i)=>{
+    const one=g.lines.length===1&&(!g.lines[0].item||same(g.lines[0].item,g.n));
+    return `${i+1}) ${g.n}`+(one?(qtyTxt(g.lines[0])?' — '+qtyTxt(g.lines[0]):'')
+      :' — '+g.lines.map(p=>`${p.item||g.n}${qtyTxt(p)?' ('+qtyTxt(p)+')':''} ${n(p.amount)}`).join(' + '))+` = *${n(g.total)}*`;
+  }).join('\n')+`\n\n*Total = ₹${n(L.reduce((a,g)=>a+g.total,0))}/-*\nENTRIX Innovation`;
+  if(navigator.share) navigator.share({text:txt}).catch(()=>{});
+  else window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank');
+}
+function supCard(id){
+  const R=supRows(new Set([id])); if(!R.length) return '';
+  return `<div class="card"><div class="tot h"><span>Suppliers</span><span>Due</span></div>
+    ${R.map(r=>`<div class="tot"><span>${esc(r.n)}<small class="sm2">Billed ${money(r.billed)} · on credit ${money(r.credit)} · paid ${money(r.paid)}</small></span>
+      <span style="text-align:right"><b class="num ${r.due>0?'neg':'pos'}">${money(r.due)}</b>${r.due>0?`<br><button class="chip" data-sup="${esc(r.n)}" style="padding:4px 11px;margin-top:4px">Pay</button>`:''}</span></div>`).join('')}</div>`;
+}
+/* One contractor's piece of work on this project */
+function workCard(w){
+  const own=isOwner();
+  return `<div class="card wcard">
+    <div class="wh"><div><b>${esc(w.work||'Work')}</b><span>${own?esc(w.contractor||'No contractor yet'):'Your work'}</span></div>
+      <span class="badge rate">${w.perQty?`${rs(w.rate)}/${esc(w.unit)} × ${qf(w.qty)}`:'Lump sum'}</span></div>
+    ${w.pct!==null?`<div class="bar${w.pct>=100?' full':''}" style="margin-top:4px"><i style="width:${w.pct}%"></i></div>
+      <div class="barlbl" style="margin-bottom:6px"><span>${qf(w.done)} of ${qf(w.qty)} ${esc(w.unit)} done</span><span>${w.pct}%</span></div>`:''}
+    <div class="tot"><span>Contract</span><b class="num">${money(w.contract)}</b></div>
+    <div class="tot"><span>${own?'Paid / advances':'Received'}</span><b class="num">${money(w.paid)}</b></div>
+    ${w.perQty?`<div class="tot"><span>${own?'Payable':'Due'} for ${qf(w.done)} ${esc(w.unit)} done</span><b class="num ${w.dueNow>0?'neg':'pos'}">${money(w.dueNow)}</b></div>`:''}
+    <div class="tot"><span><b>Balance on contract</b></span><b class="num ${w.balance>0?'neg':'pos'}">${money(w.balance)}</b></div>
+    ${w.conExp?`<div class="tot" style="font-size:12.5px;color:var(--muted)"><span>${own?'His':'Your'} expenses ${money(w.conExp)}</span><span>${own?'His':'Your'} margin <b class="num ${w.conMargin>=0?'pos':'neg'}">${money(w.conMargin)}</b></span></div>`:''}
+    ${own?`<div class="two" style="margin:10px 0 0">
+      <button class="btn sm" data-pay="${esc(w.id)}">₹ Pay ${esc((w.contractor||'').split(' ')[0]||'contractor')}</button>
+      <button class="btn ghost sm" data-stmt="${esc(w.contractor||'')}"${w.contractor?'':' disabled'}>Statement PDF</button></div>`:''}
+  </div>`;
+}
+
+function renderDetail(){
+  const s=site(openId), c=calc(openId), done=(s.status||'active')==='done';
+  if(!s.name){ if(justMade[openId]&&Date.now()-justMade[openId]<15000) return; go('sites'); return; }
+
+  if(isOwner()){
+    const over=!c.isClient&&c.value&&c.spent>c.value;
+    const sub=[s.client,s.location,s.start?'Started '+dmy(s.start):''].filter(Boolean).join(' · ');
+    $('detailHead').innerHTML=`
+    <div class="grand ${c.isClient?(c.profit>=0?'win':'lose'):(over?'lose':'')}">
+      <div class="k">${esc(s.name)} · ${c.isClient?'projected profit':'spent so far'}${done?' · completed':''}</div>
+      <div class="v num ${c.isClient?(c.profit>=0?'g':'r'):(over?'r':'')}">${money(c.isClient?c.profit:c.spent)}</div>
+      ${sub?`<div style="font-size:12px;color:#9FB0CC;margin-top:4px">${esc(sub)}</div>`:''}
+      <div class="split">
+        <div>${c.isClient?'Contract':'Budget'}<b class="num">${c.value?money(c.value):'—'}</b></div>
+        <div>${c.isClient?'Spent so far':'Budget left'}<b class="num">${c.isClient?money(c.spent):(c.value?money(c.left):'—')}</b></div>
+        <div>Cost / sq ft${c.area?`<br><span style="opacity:.75">${qf(c.area)} sq ft</span>`:''}<b class="num">${c.area?money(c.perSqft):'—'}</b></div>
+      </div>
+    </div>
+    ${c.isClient?`<div class="card">
+      <div class="tot h"><span>Client${s.client?' · '+esc(s.client):''}</span></div>
+      <div class="tot"><span>Contract value</span><b class="num">${money(c.value)}</b></div>
+      <div class="tot"><span>Received</span><b class="num">${money(c.recd)}</b></div>
+      <div class="tot key"><span><b>Still to receive</b></span><b class="num ${c.clientDue>0?'neg':'pos'}">${money(c.clientDue)}</b></div>
+    </div>`:''}
+    ${sheetCard(openId,c.ourExp)}
+    <div class="card">
+      <div class="tot h"><span>Cost so far</span></div>
+      <div class="tot"><span>Cost sheet total<small class="sm2">all work items above</small></span><b class="num">${money(c.ourExp)}</b></div>
+      <div class="tot"><span>Paid to contractors<small class="sm2">of ${money(c.contract)} contracted</small></span><b class="num">${money(c.allPaid)}</b></div>
+      <div class="tot"><span>Supplier dues<small class="sm2">unpaid credit bills, counted above</small></span><b class="num ${c.supDue>0?'neg':''}">${money(c.supDue)}</b></div>
+      <div class="tot"><span>Balance on contractor contracts</span><b class="num ${c.balance>0?'neg':''}">${money(c.balance)}</b></div>
+      ${!c.isClient&&c.recd?`<div class="tot"><span>Funds received (loan / owner)</span><b class="num">${money(c.recd)}</b></div>`:''}
+      <div class="tot key"><span><b>Total spent so far</b></span><b class="num">${money(c.spent)}</b></div>
+    </div>
+    ${catCard('Head-wise cost',byHead(openId),listSum(byHead(openId)),colIn(CATS))}
+    ${matCard(openId)}
+    ${supCard(openId)}
+    <div class="eyebrow">Contractors &amp; work · ${c.works.length}</div>
+    ${c.works.map(workCard).join('')||'<div class="card empty" style="padding:18px"><b>No contractor yet</b>Add who does which work — mason, centering, electrical, plumbing…</div>'}
+    <button class="btn ghost sm" id="addWorkBtn" style="margin-bottom:12px">+ Add contractor / work</button>
+    ${catCard('Contractor expenses by type',byConCat(openId,null),c.conExp,colIn(CON_CATS))}
+    <div class="two">
+      <button class="btn ghost sm" id="editSiteBtn">Edit project</button>
+      <button class="btn ghost sm" id="statusBtn">${done?'Re-open project':'Mark completed'}</button>
+    </div>`;
+    $('editSiteBtn').onclick=()=>showEdit();
+    $('addWorkBtn').onclick=()=>showEdit(true);
+    $('detailHead').querySelectorAll('[data-pay]').forEach(b=>b.onclick=()=>openSheet('payment',b.dataset.pay));
+    $('detailHead').querySelectorAll('[data-stmt]').forEach(b=>b.onclick=()=>statement(openId,b.dataset.stmt));
+    $('detailHead').querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>{ const p=PAYS.find(x=>x.id===b.dataset.ed); if(p) openSheet(p.type,null,p); });
+    $('detailHead').querySelectorAll('[data-addto]').forEach(b=>b.onclick=()=>openSheet('ourexp',null,null,'',b.dataset.addto));
+    if($('waSheet')) $('waSheet').onclick=()=>shareSheet(openId);
+    $('detailHead').querySelectorAll('[data-sup]').forEach(b=>b.onclick=()=>openSheet('suppay',null,null,b.dataset.sup));
+    $('statusBtn').onclick=async()=>{
+      const st=done?'active':'done';
+      if(LIVE) await W(window.FS.updateDoc(window.FS.doc(db,COL.jobs,openId),{status:st}));
+      s.status=st; toast(st==='done'?'Marked completed':'Project re-opened'); render();
+    };
+  } else {
+    $('detailHead').innerHTML=`
+    <div class="grand">
+      <div class="k">${esc(s.name)} · balance to receive</div>
+      <div class="v num ${c.balance>0?'r':'g'}">${money(c.balance)}</div>
+      <div class="split">
+        <div>Your contract<b class="num">${money(c.contract)}</b></div>
+        <div>Received<b class="num">${money(c.paid)}</b></div>
+        <div>Your expenses<b class="num">${money(c.conExp)}</b></div>
+      </div>
+    </div>
+    ${c.works.length>1?`<div class="eyebrow">Your work on this project · ${c.works.length}</div>`:''}
+    ${c.works.map(workCard).join('')}
+    ${catCard('Your expenses by type',byConCat(openId),c.conExp,colIn(CON_CATS))}`;
+  }
+
+  /* ledger */
+  const myIds=new Set(c.works.map(w=>w.id)), wById=Object.fromEntries(calc(openId,null).works.map(w=>[w.id,w]));
+  const rows=PAYS.filter(p=>p.siteId===openId).filter(p=>!isCon()||(CON_TYPES.includes(p.type)&&myIds.has(wid(p))));
+  const types=[...new Set(rows.map(p=>p.type))];
+  const workChips=isOwner()&&c.works.length>1?c.works.map(w=>['w:'+w.id,(w.contractor||w.work||'Work').split(' ')[0]]):[];
+  const hasCredit=rows.some(p=>p.type==='ourexp'&&p.pay==='credit');
+  const chips=[['all','All'],...types.map(x=>['t:'+x,tag(x)]),...(hasCredit?[['credit','On credit']]:[]),...workChips];
+  $('ledChips').innerHTML=chips.length>2?chips.map(([k,l])=>`<button class="chip${ledF===k?' on':''}" data-l="${esc(k)}">${esc(l)}</button>`).join(''):'';
+  $('ledChips').querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{ledF=b.dataset.l;renderDetail();});
+  const hit=p=>!ledQ||[p.item,p.category,p.stage,p.supplier,p.bill,p.note,p.contractor,p.work,p.mode,p.by].join(' ').toLowerCase().includes(ledQ);
+  const shown=rows.filter(p=>ledF==='all'||(ledF==='credit'&&p.type==='ourexp'&&p.pay==='credit')||(ledF.startsWith('t:')&&p.type===ledF.slice(2))||(ledF.startsWith('w:')&&CON_TYPES.includes(p.type)&&wid(p)===ledF.slice(2)))
+    .filter(hit).sort((a,b)=>(a.date<b.date?1:a.date>b.date?-1:(b.createdAt||0)-(a.createdAt||0)));
+  const showWork=c.works.length>1;
+  const tot=shown.reduce((a,p)=>a+(Number(p.amount)||0),0);
+  $('entryHead').textContent=(isCon()?'My entries':'All entries')+' · '+shown.length+((ledF!=='all'||ledQ)&&shown.length?' · '+money(tot):'');
+  $('entryList').innerHTML=shown.length?shown.map(p=>payRow(p,showWork?wById[wid(p)]:null)).join(''):`<div class="empty"><b>${rows.length?'No entries match':'Nothing yet'}</b>${rows.length?'Clear the search or filter.':'Tap “+ Add entry” to record one.'}</div>`;
+  $('entryList').querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{
+    if(!arm(b,'Delete','Tap to confirm')) return;
+    if(LIVE) await W(window.FS.deleteDoc(window.FS.doc(db,COL.pays,b.dataset.del)));
+    else { PAYS=PAYS.filter(x=>x.id!==b.dataset.del); render(); }
+    toast('Deleted');
+  });
+  $('entryList').querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>{
+    const p=PAYS.find(x=>x.id===b.dataset.ed); if(p) openSheet(p.type,p.workId,p);
+  });
+
+  drawPhotos();
+  $('reportBtnWrap').innerHTML = isOwner()
+    ? `<button class="btn dark" id="projBtn">Project statement (PDF)</button>`
+    : `<button class="btn ghost" id="stmtBtn">Download my statement (PDF)</button>`;
+  if($('projBtn')) $('projBtn').onclick=()=>projectStatement(openId);
+  if($('stmtBtn')) $('stmtBtn').onclick=()=>statement(openId,ME.name);
+}
+const qtyTxt=p=>Number(p.qty)>0?`${qf(p.qty)} ${p.unit||''}${Number(p.rate)>0?' × '+rs(p.rate):''}`:'';
+function payRow(p,w){
+  const meta=TYPE[p.type]||{col:'#999'}, isE=p.type==='ourexp';
+  const mine = isOwner() || (isCon() && p.by===ME.name);
+  const amt = p.type==='progress' ? `${qf(p.qty)} ${esc(p.unit||'')}` : money(p.amount);
+  const wl = w&&CON_TYPES.includes(p.type) ? (isOwner()?workLabel(w):(w.work||'')) : '';
+  const title = isE ? (p.item||p.stage||'Expense') : tag(p.type);
+  const sub = isE ? [p.item?p.stage:'',p.category].filter(Boolean).join(' · ') : (p.category||'');
+  const det = isE ? [qtyTxt(p),p.supplier,p.bill?'Bill '+p.bill:'',p.pay==='credit'?'':p.mode] : [p.supplier,p.mode];
+  return `<div class="ent"><i class="dot" style="background:${meta.col}"></i><div class="body">
+    <div class="t1">${esc(title)}${isE&&p.pay==='credit'?' <span class="badge cr">Credit</span>':''}</div>
+    ${sub?`<div class="t2" style="font-weight:600">${esc(sub)}</div>`:''}
+    ${wl?`<div class="t2" style="color:var(--navy);font-weight:700">${esc(wl)}</div>`:''}
+    <div class="t2">${esc([dmy(p.date),...det,p.note,p.by?'by '+p.by:''].filter(Boolean).join(' · '))}</div>
+    ${mine?`<button class="del" data-ed="${esc(p.id)}" style="color:var(--blue);margin-right:14px">Edit</button><button class="del" data-del="${esc(p.id)}">Delete</button>`:''}
+  </div><div class="amt num">${amt}</div></div>`;
+}
+
+/* ═══════════ 7b. Add / edit entry sheet ═══════════ */
+$('fab').onclick=()=>openSheet();
+$('sheet').addEventListener('click',e=>{ if(e.target.id==='sheet') closeSheet(); });
+function closeSheet(){ $('sheet').classList.remove('open'); }
+function sheetTypes(){
+  const c=calc(openId), hasWork=c.works.length>0, hasQty=c.works.some(w=>w.qty>0);
+  const ty=isCon()?(canExp()?['expense','advance']:['advance']):['ourexp',...(hasWork?['payment']:[]),'suppay','received'];
+  if(hasQty) ty.push('progress');
+  return ty;
+}
+function sheetWorks(ty){
+  const ws=calc(openId).works;
+  if(ty==='progress'){ const p=ws.filter(w=>w.qty>0); return p.length?p:ws; }
+  return ws;
+}
+function openSheet(ty,workId,edit,sup,item){
+  sheetItem=item||'';
+  const ts=sheetTypes(); sheetE=edit||null; sheetT=edit?edit.type:(ts.includes(ty)?ty:ts[0]);
+  sheetW=workId||null; sheetSup=sup||''; drawSheet(); $('sheet').classList.add('open');
+}
+const MODES=['Cash','UPI','Bank transfer','Cheque'];
+/* Cost entry — one work item, one or more cost lines (detail · qty · rate · amount) */
+function lineRow(i,l){
+  l=l||{};
+  return `<div class="xl">
+    <input data-lk="item" placeholder="Detail — e.g. ${i?'Labour, transport, casing pipe':'Moorum 750 cft, JCB, drilling'}" value="${esc(l.item||'')}" aria-label="Detail">
+    <div class="xlr">
+      <input data-lk="qty" type="tel" inputmode="decimal" placeholder="Qty" value="${esc(l.qty||'')}" aria-label="Quantity">
+      <select data-lk="unit" aria-label="Unit">${opt(withSel(UNITS,l.unit),l.unit||'nos')}</select>
+      <input data-lk="rate" type="tel" inputmode="decimal" placeholder="Rate" value="${esc(l.rate||'')}" aria-label="Rate">
+      <input data-lk="amt" type="tel" inputmode="decimal" placeholder="Amount ₹" value="${esc(l.amt||'')}" style="font-weight:800" aria-label="Amount">
+    </div></div>`;
+}
+function expFields(e){
+  const items=workItems(openId).map(g=>g.n), want=e?e.stage:sheetItem;
+  const sel=items.find(x=>same(x,want))||'', credit=e&&e.pay==='credit';
+  const more=!!(e&&(e.supplier||e.bill||credit||e.category));
+  return `
+    <div class="field"><label for="xStage">Work item</label>
+      <select id="xStage"${items.length?'':' style="display:none"'}>${opt(items,sel)}<option value="__new"${sel?'':' selected'}>+ New work item…</option></select>
+      <input id="xStageN" placeholder="e.g. Boring 500 feet · Water pump · Plantation" value="${esc(sel?'':(want||''))}" style="${items.length?'margin-top:8px':''}${sel?';display:none':''}" aria-label="New work item name"></div>
+    <label>Costs — fill amount, or qty × rate</label>
+    <div id="xLines">${lineRow(0,e?{item:e.item,qty:Number(e.qty)||'',unit:e.unit,rate:Number(e.rate)||'',amt:e.amount}:null)}</div>
+    ${e?'':'<button type="button" class="btn ghost sm" id="xAdd">+ Add another cost line</button>'}
+    <div class="hint" id="xTot" style="margin:10px 0 12px"></div>
+    <button type="button" class="chip" id="xMoreB" style="margin-bottom:12px">Supplier · bill · credit · head ${more?'▴':'▾'}</button>
+    <div id="xMore" style="${more?'':'display:none'}">
+      <div class="row">
+        <div class="field"><label for="xSup">Supplier / paid to</label><select id="xSup"><option value="">— none —</option>${opt(withSel(allSuppliers(),e&&e.supplier),e&&e.supplier)}<option value="__new">+ New supplier…</option></select></div>
+        <div class="field"><label for="xBill">Bill no.</label><input id="xBill" value="${esc(e&&e.bill||'')}" placeholder="optional"></div>
+      </div>
+      <div class="field" id="xSupNF" style="display:none"><input id="xSupN" placeholder="New supplier name" aria-label="New supplier name"></div>
+      <div class="field"><label>Payment</label>
+        <div class="seg" id="xPay" style="grid-template-columns:1fr 1fr;margin-bottom:0">
+          <button type="button" data-p="paid" class="${credit?'':'on'}">Paid now</button><button type="button" data-p="credit" class="${credit?'on':''}">On credit (unpaid)</button></div></div>
+      <div class="field"><label for="xCat">Head (for head-wise report)</label><select id="xCat"><option value="">— none —</option>${opt(withSel(CATS,e&&e.category),e&&e.category)}</select></div>
+    </div>`;
+}
+const xLines=()=>[...$('xLines').querySelectorAll('.xl')];
+const xGet=(r,k)=>r.querySelector(`[data-lk="${k}"]`);
+function wireExp(e){
+  const tot=()=>{ const L=xLines(), t=L.reduce((a,r)=>a+(parseFloat(xGet(r,'amt').value)||0),0);
+    $('xTot').innerHTML=`${L.length>1?L.length+' lines · ':''}Total <b>${money(t)}</b>`; };
+  const wire=r=>{
+    const auto=()=>{ const q=parseFloat(xGet(r,'qty').value), x=parseFloat(xGet(r,'rate').value); if(q>0&&x>0) xGet(r,'amt').value=Math.round(q*x*100)/100; tot(); };
+    xGet(r,'qty').oninput=auto; xGet(r,'rate').oninput=auto; xGet(r,'amt').oninput=tot; };
+  xLines().forEach(wire); tot();
+  if($('xAdd')) $('xAdd').onclick=()=>{ $('xLines').insertAdjacentHTML('beforeend',lineRow(xLines().length));
+    const r=xLines().pop(); wire(r); tot(); xGet(r,'item').focus(); };
+  $('xStage').onchange=()=>{ const n=$('xStage').value==='__new'; $('xStageN').style.display=n?'':'none'; if(n) $('xStageN').focus(); };
+  $('xMoreB').onclick=()=>{ const o=$('xMore').style.display==='none'; $('xMore').style.display=o?'':'none'; $('xMoreB').textContent='Supplier · bill · credit · head '+(o?'▴':'▾'); };
+  $('xSup').onchange=()=>{ const n=$('xSup').value==='__new'; $('xSupNF').style.display=n?'':'none'; if(n) $('xSupN').focus(); };
+  $('xPay').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    $('xPay').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+    $('pModeF').style.visibility=b.dataset.p==='credit'?'hidden':'';
+  });
+  if(e&&e.pay==='credit') $('pModeF').style.visibility='hidden';
+}
+function drawSheet(keep){
+  const ts=sheetTypes(), ty=sheetT, e=sheetE;
+  const k=keep||(e?{amt:e.type==='progress'?e.qty:e.amount,date:e.date,note:e.note,work:e.workId,cat:e.category,mode:e.mode}:{});
+  const isQ=ty==='progress', isE=ty==='ourexp', isX=ty==='expense', isS=ty==='suppay';
+  const ws=CON_TYPES.includes(ty)?sheetWorks(ty):[];
+  const selW=k.work||sheetW||(ws[0]&&ws[0].id);
+  const dues=isS?supRows(new Set([openId])):[], selS=e?e.supplier:sheetSup;
+  const supOpts=isS?withSel([...new Set([...dues.map(r=>r.n),...allSuppliers()])],selS):[];
+  const dueOf=n=>{ const r=dues.find(x=>same(x.n,n)); return r&&r.due>0?' — due '+money(r.due):''; };
+  $('sheetBody').innerHTML=`
+    <div class="sheet-h"><b>${e?'Edit entry · ':''}${esc(site(openId).name)}</b><button id="shX" aria-label="Close">✕</button></div>
+    ${e?`<div class="hint" style="margin:0 0 12px"><b>${esc(tag(ty))}</b></div>`:`<div class="seg" style="grid-template-columns:repeat(${ts.length>3?2:ts.length},1fr)">
+      ${ts.map(x=>`<button data-t="${x}" class="${x===ty?'on':''}">${TYPE[x].btn}</button>`).join('')}</div>`}
+    ${ws.length>1?`<div class="field"><label for="pWork">${isOwner()?'Contractor / work':'Which work'}</label>
+      <select id="pWork">${ws.map(w=>`<option value="${esc(w.id)}"${w.id===selW?' selected':''}>${esc(isOwner()?workLabel(w):(w.work||'Work'))}${w.qty&&isQ?` (${qf(w.done)}/${qf(w.qty)} ${esc(w.unit)})`:''}</option>`).join('')}</select></div>`
+      :ws.length===1&&isOwner()?`<div class="hint" style="margin:0 0 12px">${esc(workLabel(ws[0]))}${isQ&&ws[0].qty?` · ${qf(ws[0].done)}/${qf(ws[0].qty)} ${esc(ws[0].unit)} done`:''}</div>`:''}
+    ${isE?expFields(e):`
+    ${isS?`<div class="field"><label for="xSup">Supplier</label><select id="xSup">${supOpts.length?'':'<option value="">— no supplier yet —</option>'}${supOpts.map(n=>`<option value="${esc(n)}"${same(n,selS)?' selected':''}>${esc(n+dueOf(n))}</option>`).join('')}</select></div>`:''}
+    <div class="field"><label for="pAmt">${isQ?'Quantity of work done':'Amount'}</label>
+      ${isQ?`<input id="pAmt" type="tel" inputmode="decimal" placeholder="0" value="${esc(k.amt||'')}">`
+           :`<div class="rupee"><span class="c">₹</span><input id="pAmt" type="tel" inputmode="decimal" placeholder="0" value="${esc(k.amt||'')}"></div>`}</div>`}
+    <div class="row">
+      <div class="field"><label for="pDate">Date</label><input id="pDate" type="date" value="${esc(k.date||today())}"></div>
+      ${isQ?'<div></div>':isX
+        ?`<div class="field"><label for="pCat">Type</label><select id="pCat">${opt(withSel(CON_CATS,k.cat),k.cat)}</select></div>`
+        :`<div class="field" id="pModeF"><label for="pMode">Mode</label><select id="pMode">${opt(MODES,k.mode)}</select></div>`}
+    </div>
+    <div class="field"><label for="pNote">Remark</label><input id="pNote" value="${esc(k.note||'')}" placeholder="${isQ?'e.g. first floor slab centering done':isE?'e.g. Plasto 6 kg casing, tip ₹400 extra':isS?'e.g. against bill 214':isX?'e.g. labour food, diesel':'e.g. advance, part payment, final'}"></div>
+    <button class="btn" id="payBtn">${e?'Save changes':'Save'}</button>`;
+  $('shX').onclick=closeSheet;
+  $('sheetBody').querySelectorAll('.seg button[data-t]').forEach(b=>b.onclick=()=>{
+    const keepNow={amt:$('pAmt')?$('pAmt').value:'',date:$('pDate').value,note:$('pNote').value,work:$('pWork')?$('pWork').value:selW};
+    sheetT=b.dataset.t; drawSheet(keepNow);
+  });
+  if(isE) wireExp(e);
+  $('payBtn').onclick=savePay;
+}
+async function saveCost(){
+  const e=sheetE, items=workItems(openId).map(g=>g.n);
+  let stage=$('xStage').value==='__new'?$('xStageN').value.trim():$('xStage').value;
+  if(!stage) return toast('Type the work item name',true);
+  stage=items.find(x=>same(x,stage))||stage;
+  const r2=v=>Math.round((parseFloat(v)||0)*100)/100;
+  const L=xLines().map(r=>{ const qty=r2(xGet(r,'qty').value);
+    return {item:xGet(r,'item').value.trim(),qty,unit:qty?xGet(r,'unit').value:'',rate:r2(xGet(r,'rate').value),amount:r2(xGet(r,'amt').value)}; }).filter(l=>l.amount>0);
+  if(!L.length) return toast('Enter at least one amount',true);
+  const sup=canonSup($('xSup').value==='__new'?$('xSupN').value:$('xSup').value), pay=$('xPay').querySelector('.on').dataset.p;
+  if(pay==='credit'&&!sup) return toast('A credit purchase needs the supplier name — open “Supplier · bill · credit”',true);
+  const base={siteId:openId,type:'ourexp',date:$('pDate').value||today(),note:$('pNote').value.trim(),stage,
+    category:$('xCat').value,supplier:sup,bill:$('xBill').value.trim(),pay,mode:pay==='paid'?$('pMode').value:''};
+  $('payBtn').disabled=true; lastStage=stage;
+  const now=Date.now(), fs=window.FS;
+  if(e){
+    const rec={...base,...L[0]};
+    if(LIVE) await W(fs.updateDoc(fs.doc(db,COL.pays,e.id),rec));
+    else { const o=PAYS.find(x=>x.id===e.id); if(o) Object.assign(o,rec); render(); }
+  } else {
+    for(let i=0;i<L.length;i++){
+      const rec={...base,...L[i],by:ME.name,createdAt:now+i};
+      if(LIVE) await W(fs.addDoc(fs.collection(db,COL.pays),rec)); else PAYS.push({id:'p'+now+'_'+i,...rec});
+    }
+    if(!LIVE) render();
+  }
+  closeSheet(); toast((e?'Updated — ':'Saved — ')+stage+' · '+money(L.reduce((a,l)=>a+l.amount,0))+(L.length>1?` · ${L.length} lines`:''));
+}
+async function savePay(){
+  if(sheetT==='ourexp') return saveCost();
+  const ty=sheetT, e=sheetE, amt=parseFloat($('pAmt').value);
+  if(!(amt>0)) return toast('Enter '+(ty==='progress'?'the quantity done':'an amount'),true);
+  const rec={ siteId:openId, type:ty, date:$('pDate').value||today(), note:$('pNote').value.trim() };
+  if(!e){ rec.by=ME.name; rec.createdAt=Date.now(); }
+  let w=null;
+  if(CON_TYPES.includes(ty)){
+    const ws=sheetWorks(ty), id=$('pWork')?$('pWork').value:(sheetW&&ws.some(x=>x.id===sheetW)?sheetW:(ws[0]&&ws[0].id));
+    w=ws.find(x=>x.id===id); if(!w) return toast('Add a contractor to this project first',true);
+    rec.workId=w.id; rec.contractor=w.contractor||''; rec.work=w.work||'';
+  }
+  if(ty==='progress'){ rec.qty=Math.round(amt*100)/100; rec.unit=w.unit||''; rec.amount=0; }
+  else { rec.amount=Math.round(amt*100)/100; }
+  if(ty==='expense') rec.category=$('pCat').value;
+  else if(ty==='suppay'){
+    rec.supplier=canonSup($('xSup').value); if(!rec.supplier) return toast('Choose a supplier — add a purchase from him first',true);
+    rec.mode=$('pMode').value;
+  }
+  else if(ty!=='progress') rec.mode=$('pMode').value;
+  $('payBtn').disabled=true;
+  if(LIVE) await W(e?window.FS.updateDoc(window.FS.doc(db,COL.pays,e.id),rec):window.FS.addDoc(window.FS.collection(db,COL.pays),rec));
+  else { if(e){ const o=PAYS.find(x=>x.id===e.id); if(o) Object.assign(o,rec); } else PAYS.unshift({id:'p'+Date.now(),...rec}); render(); }
+  closeSheet();
+  toast((e?'Updated — ':'Saved — ')+(ty==='progress'?qf(rec.qty)+' '+rec.unit:money(rec.amount))+(rec.contractor&&isOwner()?' · '+rec.contractor:''));
+}
+
+/* ═══════════ 7c. Site photos ═══════════
+   Photos are shrunk on the phone (~100–250 KB) and kept in Firestore, so no paid
+   Firebase Storage plan is needed. Only the open site's photos are downloaded. */
+let photoSig='', uploading=false, vIdx=0, justAdded=[];
+function watchPhotos(id){
+  if(unPhotos){ unPhotos(); unPhotos=null; }
+  if(!LIVE) return;
+  const fs=window.FS; PHOTOS=[];
+  unPhotos=fs.onSnapshot(fs.query(fs.collection(db,COL.photos),fs.where('siteId','==',id)),
+    s=>{ PHOTOS=s.docs.map(d=>({id:d.id,...d.data()})); drawPhotos(); },
+    e=>{ if($('photoBox')) $('photoBox').innerHTML='<div class="banner" style="margin:0">Photos blocked: '+esc(e.code||e.message)+' — check Firestore rules.</div>'; });
+}
+const sitePhotos=()=>PHOTOS.filter(p=>p.siteId===openId).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+function drawPhotos(force){
+  if(!openId||!$('photoBox')) return;
+  const ph=sitePhotos(), sig=openId+'|'+uploading+'|'+justAdded.length+'|'+ph.map(p=>p.id).join(',');
+  if(!force&&sig===photoSig) return;      // don't wipe a caption being typed
+  photoSig=sig;
+  $('photoBox').innerHTML=`
+    ${justAdded.length?`<div class="sharebar"><span>✓ ${justAdded.length} photo${justAdded.length>1?'s':''} added</span>
+      <button class="wa" id="phShareNew">${WA_ICON} Share on WhatsApp</button><button class="x" id="phShareX" aria-label="Dismiss">✕</button></div>`:''}
+    ${ph.length?`<div class="pgrid">${ph.map((p,i)=>`<button data-ph="${i}" aria-label="Open photo ${i+1}"><img src="${p.thumb||p.full}" alt="${esc(p.note||'Site photo')}" loading="lazy"></button>`).join('')}</div>`
+      :'<div class="empty" style="padding:10px 4px 14px"><b>No photos yet</b>Add site photos stage by stage — footing, plinth, slab, finishing.</div>'}
+    <div class="field" style="margin:12px 0 9px"><input id="phNote" placeholder="Caption (optional) — e.g. First floor slab casting" aria-label="Photo caption"></div>
+    <label class="btn dark sm" for="phIn" style="text-align:center${uploading?';opacity:.5;pointer-events:none':''}">${uploading?'Uploading…':'📷 Add photos'}</label>
+    <input type="file" id="phIn" accept="image/*" multiple hidden>
+    ${ph.length?`<button class="btn ghost sm" id="phPdf" style="margin-top:9px">Photo report (PDF) · ${ph.length}</button>`:''}`;
+  $('photoBox').querySelectorAll('[data-ph]').forEach(b=>b.onclick=()=>openViewer(+b.dataset.ph));
+  $('phIn').onchange=e=>{ const f=[...e.target.files]; e.target.value=''; if(f.length) uploadPhotos(f); };
+  if($('phPdf')) $('phPdf').onclick=photoReport;
+  if($('phShareNew')) $('phShareNew').onclick=()=>{ const l=justAdded.slice(); justAdded=[]; drawPhotos(true); sharePhotos(l); };
+  if($('phShareX')) $('phShareX').onclick=()=>{ justAdded=[]; drawPhotos(true); };
+}
+function loadImg(file){ return new Promise((res,rej)=>{ const u=URL.createObjectURL(file), i=new Image();
+  i.onload=()=>{ URL.revokeObjectURL(u); res(i); }; i.onerror=()=>rej(new Error('not an image')); i.src=u; }); }
+function shrink(img,max,q){
+  const k=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
+  const c=document.createElement('canvas'); c.width=Math.round(img.naturalWidth*k); c.height=Math.round(img.naturalHeight*k);
+  const g=c.getContext('2d'); g.fillStyle='#fff'; g.fillRect(0,0,c.width,c.height); g.drawImage(img,0,0,c.width,c.height);
+  return c.toDataURL('image/jpeg',q);
+}
+async function uploadPhotos(files){
+  const note=($('phNote')&&$('phNote').value.trim())||'', siteId=openId;
+  uploading=true; drawPhotos(true);
+  let ok=0; const added=[];
+  for(let n=0;n<files.length;n++){
+    toast(`Uploading photo ${n+1} of ${files.length}…`);
+    try{
+      const img=await loadImg(files[n]);
+      let full='';
+      for(const [m,q] of [[1280,.72],[1280,.6],[1024,.6],[1024,.5],[800,.5],[640,.45]]){ full=shrink(img,m,q); if(full.length<900000) break; }
+      const rec={siteId,full,thumb:shrink(img,320,.6),note,by:ME.name,date:today(),createdAt:Date.now()};
+      if(LIVE) await W(window.FS.addDoc(window.FS.collection(db,COL.photos),rec));
+      else PHOTOS.unshift({id:'ph'+Date.now()+'_'+n,...rec});
+      ok++; added.push(rec);
+    }catch(e){ toast(`Photo ${n+1} failed: ${e.message||e}`,true); }
+  }
+  uploading=false; justAdded=added; drawPhotos(true);
+  if(ok) toast(ok>1?`${ok} photos saved — tap Share on WhatsApp`:'Photo saved — tap Share on WhatsApp');
+}
+function openViewer(i){ vIdx=i; drawViewer(); $('viewer').classList.add('open'); }
+function closeViewer(){ $('viewer').classList.remove('open'); $('viewer').innerHTML=''; }
+function drawViewer(){
+  const ph=sitePhotos(), p=ph[vIdx]; if(!p){ closeViewer(); return; }
+  const canDel=isOwner()||p.by===ME.name;
+  $('viewer').innerHTML=`
+    <div class="vtop"><span>${vIdx+1} / ${ph.length}</span><button id="vX" aria-label="Close">✕</button></div>
+    <div class="vimg"><img src="${p.full}" alt="${esc(p.note||'Site photo')}"></div>
+    <div class="vcap"><b>${esc(p.note||'')}</b><span>${esc([dmy(p.date),p.by?'by '+p.by:''].filter(Boolean).join(' · '))}</span></div>
+    <button class="wa" id="vS" style="width:100%;margin-bottom:8px">${WA_ICON} Share on WhatsApp</button>
+    <div class="vnav"><button id="vP"${vIdx?'':' disabled'}>‹ Prev</button>${canDel?'<button id="vD">Delete</button>':'<span></span>'}<button id="vN"${vIdx<ph.length-1?'':' disabled'}>Next ›</button></div>`;
+  $('vX').onclick=closeViewer;
+  $('vS').onclick=()=>sharePhotos([p]);
+  $('vP').onclick=()=>{ if(vIdx>0){ vIdx--; drawViewer(); } };
+  $('vN').onclick=()=>{ if(vIdx<ph.length-1){ vIdx++; drawViewer(); } };
+  if($('vD')) $('vD').onclick=async()=>{
+    if(!arm($('vD'),'Delete','Tap to confirm')) return;
+    try{
+      if(LIVE) await W(window.FS.deleteDoc(window.FS.doc(db,COL.photos,p.id)));
+      else PHOTOS=PHOTOS.filter(x=>x.id!==p.id);
+      closeViewer(); drawPhotos(true); toast('Photo deleted');
+    }catch(e){ toast('Could not delete: '+e.message,true); }
+  };
+}
+const WA_ICON='<svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align:-3px"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a.9.9 0 0 0-.7.3 2.8 2.8 0 0 0-.9 2.1 4.9 4.9 0 0 0 1 2.6 11.2 11.2 0 0 0 4.3 3.8c1.6.7 2.2.7 3 .6a2.6 2.6 0 0 0 1.7-1.2 2.1 2.1 0 0 0 .2-1.2c-.1-.1-.3-.2-.5-.3z"/></svg>';
+function dataUrlToFile(d,name){
+  const b=atob(d.split(',')[1]), u=new Uint8Array(b.length);
+  for(let i=0;i<b.length;i++) u[i]=b.charCodeAt(i);
+  return new File([u],name,{type:'image/jpeg'});
+}
+/* Opens the phone's share sheet with the photo(s) attached → pick WhatsApp.
+   Where the browser can't attach files, the photo is downloaded and WhatsApp opens with the caption. */
+async function sharePhotos(list){
+  list=list.filter(p=>p&&p.full); if(!list.length) return;
+  const s=site(openId), slug=String(s.name||'site').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'');
+  const files=list.map((p,i)=>dataUrlToFile(p.full,`${slug}-${p.date||today()}-${i+1}.jpg`));
+  const notes=[...new Set(list.map(p=>p.note).filter(Boolean))].join(', ');
+  const text=`ENTRIX Innovation — ${s.name||''}${notes?'\n'+notes:''}\n${dmy(list[0].date)}${list[0].by?' · by '+list[0].by:''}`;
+  try{
+    if(navigator.canShare&&navigator.canShare({files})){ await navigator.share({files,text,title:s.name||'Site photo'}); return; }
+  }catch(e){ if(e&&e.name==='AbortError') return; }
+  try{
+    files.forEach(f=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(f); a.download=f.name; document.body.appendChild(a); a.click(); a.remove(); });
+  }catch(e){}
+  window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');
+  toast('Photo downloaded — attach it in WhatsApp from your gallery');
+}
+function photoReport(){
+  const s=site(openId), ph=sitePhotos().slice().reverse();
+  const sub=isOwner()?esc([s.client,siteCons(s).length?'Contractors: '+siteCons(s).join(', '):''].filter(Boolean).join(' · ')):esc(ME.name);
+  $('report').innerHTML=pdfHead('Site Photo Report — '+esc(s.name),sub)+`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${ph.map(p=>`
+      <div style="break-inside:avoid;page-break-inside:avoid;border:1px solid #ccc;padding:5px">
+        <div style="height:250px;display:flex;align-items:center;justify-content:center;background:#f3f3f3"><img src="${p.full}" style="max-width:100%;max-height:250px;width:auto;height:auto;display:block"></div>
+        <div style="font-size:10px;margin-top:4px"><b>${esc(p.note||'')}</b> ${dmy(p.date)}${p.by?' · '+esc(p.by):''}</div></div>`).join('')}</div>
+    ${footer()}`;
+  pdfReady('Photos-'+s.name,'Site Photos — '+s.name);
+}
+
+/* ═══════════ 8. Add / edit project ═══════════ */
+const num=v=>Math.round(parseFloat(v)||0);
+const dec=v=>Math.round((parseFloat(v)||0)*100)/100;
+const blankWork=()=>({id:newWid(),contractor:'',work:'',basis:'rate',unit:'sq ft',qty:'',rate:'',amount:''});
+function showEdit(addWork){
+  const s=openId?site(openId):{};
+  draft={ name:s.name||'', client:s.client||'', location:s.location||'', kind:s.kind==='own'?'own':'client',
+    amount:s.amount||'', area:s.area||'', start:s.start||(openId?'':today()),
+    works:worksOf(s).map(w=>({...w})) };
+  if(addWork) draft.works.push(blankWork());
+  go('edit'); renderEdit();
+  if(addWork) setTimeout(()=>{ const l=document.querySelectorAll('.wedit'); if(l.length) l[l.length-1].scrollIntoView({behavior:'smooth',block:'center'}); },60);
+}
+function syncDraft(){
+  if(!draft||!$('eName')) return;
+  draft.name=$('eName').value; draft.client=$('eClient').value; draft.location=$('eLoc').value;
+  draft.amount=$('eAmt').value; draft.area=$('eArea').value; draft.start=$('eStart').value;
+  document.querySelectorAll('[data-wi]').forEach(inp=>{ const w=draft.works[+inp.dataset.wi]; if(w) w[inp.dataset.wk]=inp.value; });
+}
+function renderEdit(){
+  const d=draft, cl=d.kind==='client';
+  const cons=PEOPLE.filter(p=>p.role==='contractor').map(p=>`<option value="${esc(p.name)}"></option>`).join('');
+  const used=new Set(PAYS.filter(p=>p.siteId===openId&&CON_TYPES.includes(p.type)).map(wid));
+  $('editForm').innerHTML=`
+    <div class="eyebrow">${openId?'Edit project':'New house project'}</div>
+    <div class="card">
+      <div class="field"><label for="eName">Project name</label><input id="eName" value="${esc(d.name)}" placeholder="e.g. Kotewada house · Plot 88 duplex"></div>
+      <div class="field"><label>Type of project</label>
+        <div class="seg" id="cSeg" style="grid-template-columns:1fr 1fr;margin-bottom:0">
+          <button data-b="client" class="${cl?'on':''}">Client contract</button><button data-b="own" class="${cl?'':'on'}">Own house</button></div></div>
+      <div class="row">
+        <div class="field"><label for="eClient">${cl?'Client':'Owner'}</label><input id="eClient" value="${esc(d.client)}" placeholder="${cl?'Client name':'Owner name'}"></div>
+        <div class="field"><label for="eLoc">Location</label><input id="eLoc" value="${esc(d.location)}" placeholder="e.g. Kotewada"></div>
+      </div>
+      <div class="field"><label for="eAmt">${cl?'Contract value from client':'Budget for this house'}</label>
+        <div class="rupee"><span class="c">₹</span><input id="eAmt" type="tel" inputmode="decimal" value="${esc(d.amount)}" placeholder="0"></div></div>
+      <div class="row">
+        <div class="field"><label for="eArea">Built-up area (sq ft)</label><input id="eArea" type="tel" inputmode="decimal" value="${esc(d.area)}" placeholder="e.g. 1800"></div>
+        <div class="field"><label for="eStart">Start date</label><input id="eStart" type="date" value="${esc(d.start)}"></div>
+      </div>
+    </div>
+
+    <div class="eyebrow">Contractors &amp; work · ${d.works.length}</div>
+    <datalist id="conList">${cons}</datalist>
+    <datalist id="workList">${WORKS.map(w=>`<option value="${esc(w)}"></option>`).join('')}</datalist>
+    ${d.works.length?'':'<div class="hint" style="margin:0 0 12px">Optional — add each contractor’s work (mason, centering, electrical…) now or later. Material and other expenses are entered from the project screen.</div>'}
+    ${d.works.map((w,i)=>{ const p=w.basis==='rate'; return `
+    <div class="card wedit">
+      <div class="wh" style="margin-bottom:10px"><b>Work ${i+1}</b>
+        <button class="btn danger sm mini" data-wrm="${i}">${used.has(w.id)?'Has entries':'Remove'}</button></div>
+      <div class="row">
+        <div class="field"><label>Contractor</label><input data-wi="${i}" data-wk="contractor" list="conList" value="${esc(w.contractor)}" placeholder="e.g. Umesh Giri" autocomplete="off"></div>
+        <div class="field"><label>Work</label><input data-wi="${i}" data-wk="work" list="workList" value="${esc(w.work)}" placeholder="e.g. Centering" autocomplete="off"></div>
+      </div>
+      <div class="seg" style="grid-template-columns:1fr 1fr;margin-bottom:10px">
+        <button data-wb="${i}" data-b="rate" class="${p?'on':''}">Rate wise</button><button data-wb="${i}" data-b="lump" class="${p?'':'on'}">Lump sum</button></div>
+      ${p?`<div class="row">
+        <div class="field"><label>Rate</label><div class="rupee"><span class="c">₹</span><input data-wi="${i}" data-wk="rate" type="tel" inputmode="decimal" value="${esc(w.rate||'')}" placeholder="e.g. 280"></div></div>
+        <div class="field"><label>Per</label><select data-wi="${i}" data-wk="unit">${opt(withSel(W_UNITS,w.unit),w.unit||'sq ft')}</select></div>
+      </div>
+      <div class="field"><label>Total quantity</label><input data-wi="${i}" data-wk="qty" type="tel" inputmode="decimal" value="${esc(w.qty||'')}" placeholder="${esc(d.area||'0')}"></div>`
+      :`<div class="field"><label>Amount</label><div class="rupee"><span class="c">₹</span><input data-wi="${i}" data-wk="amount" type="tel" inputmode="decimal" value="${esc(w.amount||'')}" placeholder="0"></div></div>`}
+      <div class="whint" data-wh="${i}"></div>
+    </div>`;}).join('')}
+    <button class="btn ghost sm" id="eAddW" style="margin-bottom:12px">+ Add ${d.works.length?'another ':''}contractor / work</button>
+    <div class="card">
+      <div class="hint" id="eCalc" style="margin-top:0"></div>
+      <button class="btn" id="eSave" style="margin-top:13px">${openId?'Update project':'Save project'}</button>
+      ${openId?'<button class="btn danger sm" id="eDel" style="margin-top:9px">Delete project</button>':''}
+    </div>`;
+
+  const wVal=w=>w.basis==='rate'?Math.round(dec(w.rate)*dec(w.qty)):num(w.amount);
+  const upd=()=>{
+    syncDraft();
+    const x=num(d.amount), ar=dec(d.area); let y=0;
+    d.works.forEach((w,i)=>{
+      const v=wVal(w); y+=v;
+      const h=document.querySelector(`[data-wh="${i}"]`);
+      if(h) h.textContent=v?`= ${money(v)}${w.basis==='rate'?` (${qf(dec(w.qty))} ${w.unit||'sq ft'} × ${rs(dec(w.rate))})`:''}`:'';
+    });
+    $('eCalc').innerHTML=(x||y)
+      ? `${cl?'Contract':'Budget'} <b>${money(x)}</b> − contractor contracts <b>${money(y)}</b> = <b>${money(x-y)}</b> left for material &amp; other expenses${cl?' and profit':''}`
+        +(x&&ar?`<br>${cl?'Contract':'Budget'} works out to <b>${money(x/ar)}</b> per sq ft`:'')
+      : 'Enter the '+(cl?'contract value':'budget')+' and built-up area to track cost per sq ft.';
+  };
+  $('editForm').querySelectorAll('input,select').forEach(i=>{ i.addEventListener('input',upd); i.addEventListener('change',upd); }); upd();
+  $('cSeg').querySelectorAll('button').forEach(b=>b.onclick=()=>{ syncDraft(); d.kind=b.dataset.b; renderEdit(); });
+  $('editForm').querySelectorAll('[data-wb]').forEach(b=>b.onclick=()=>{ syncDraft(); d.works[+b.dataset.wb].basis=b.dataset.b; renderEdit(); });
+  $('editForm').querySelectorAll('[data-wrm]').forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.wrm, w=d.works[i];
+    if(used.has(w.id)) return toast('This work has payments/entries — delete those entries first',true);
+    syncDraft(); d.works.splice(i,1); renderEdit();
+  });
+  $('eAddW').onclick=()=>{ syncDraft(); d.works.push(blankWork()); renderEdit();
+    const l=document.querySelectorAll('.wedit'); l[l.length-1].scrollIntoView({behavior:'smooth',block:'center'}); };
+
+  $('eSave').onclick=async()=>{
+    syncDraft();
+    const name=d.name.trim(); if(!name) return toast('Enter a project name',true);
+    const works=d.works.filter(w=>String(w.contractor).trim()||String(w.work).trim()||dec(w.rate)||num(w.amount)).map(w=>{
+      const p=w.basis==='rate';
+      return {id:w.id||newWid(), contractor:String(w.contractor).trim(), work:String(w.work).trim()||'Work',
+        basis:p?'rate':'lump', unit:p?(w.unit||'sq ft'):'', qty:p?dec(w.qty):0, rate:p?dec(w.rate):0, amount:wVal(w)};
+    });
+    const lost=[...used].filter(id=>!works.some(w=>w.id===id));
+    if(lost.length) return toast('A work with entries was emptied — fill it again or delete its entries',true);
+    const rec={ name, client:d.client.trim(), location:d.location.trim(), kind:d.kind, amount:num(d.amount), area:dec(d.area), start:d.start||'',
+      works, contractors:[...new Set(works.map(w=>w.contractor).filter(Boolean))] };
+    for(const nm of rec.contractors) if(!PEOPLE.some(x=>same(x.name,nm))){
+      const pr={name:nm,role:'contractor',pin:''};
+      if(LIVE) await W(window.FS.addDoc(window.FS.collection(db,COL.people),pr)); else PEOPLE.push({id:'x'+Date.now()+nm,...pr});
+    }
+    if(LIVE){
+      if(openId) await W(window.FS.updateDoc(window.FS.doc(db,COL.jobs,openId),rec));
+      else { const ref=window.FS.doc(window.FS.collection(db,COL.jobs)); await W(window.FS.setDoc(ref,{...rec,status:'active',createdAt:Date.now()})); openId=ref.id; justMade[openId]=Date.now(); }
+    }
+    if(openId&&SITES.some(x=>x.id===openId)) Object.assign(site(openId),rec);
+    else { openId=openId||('s'+Date.now()); SITES.push({id:openId,status:'active',...rec}); }
+    toast('Project saved'); render(); showDetail(openId);
+  };
+  if(openId) $('eDel').onclick=async()=>{
+    const b=$('eDel');
+    if(!arm(b,'Delete project','Tap again to delete project + all entries')) return;
+    const rows=PAYS.filter(x=>x.siteId===openId);
+    if(LIVE){ for(const r of rows) await W(window.FS.deleteDoc(window.FS.doc(db,COL.pays,r.id)));
+              for(const ph of PHOTOS.filter(x=>x.siteId===openId)) await W(window.FS.deleteDoc(window.FS.doc(db,COL.photos,ph.id)));
+              await W(window.FS.deleteDoc(window.FS.doc(db,COL.jobs,openId))); }
+    PAYS=PAYS.filter(x=>x.siteId!==openId); PHOTOS=PHOTOS.filter(x=>x.siteId!==openId); SITES=SITES.filter(x=>x.id!==openId);
+    openId=null; toast('Project deleted'); render(); go('sites');
+  };
+}
+
+/* ═══════════ 9. People (Admin) ═══════════
+   Admin sees every contractor's user ID and password, and can add / edit / delete. */
+const validUid=u=>/^[a-z0-9._-]{3,20}$/i.test(u);
+const uidTaken=(u,exceptId)=>u.toLowerCase()===ADMIN_ID.toLowerCase()||PEOPLE.some(p=>p.id!==exceptId&&(p.uid||'').toLowerCase()===u.toLowerCase());
+const suggestUid=name=>String(name).trim().toLowerCase().split(/\s+/)[0].replace(/[^a-z0-9]/g,'');
+const contractors=()=>PEOPLE.filter(p=>p.role==='contractor').sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+const appLink=()=>location.href.split('#')[0].split('?')[0];
+let shown={};   // which passwords are revealed
+function renderPeople(){
+  if(!isOwner()){ $('v-people').innerHTML=''; return; }
+  const list=contractors();
+  $('v-people').innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin:0 2px 10px">
+      <div><div class="eyebrow" style="margin:0">Contractors</div><b style="font-size:22px">${list.length}</b> <span style="color:var(--muted);font-size:13px">added · ${list.filter(p=>p.uid&&p.passHash).length} with login</span></div>
+      <button class="btn mini" id="pAddBtn" style="padding:11px 14px;font-size:12px">+ Add</button>
+    </div>
+    ${list.length?'':'<div class="card empty"><b>No contractors yet</b>Tap “+ Add” to create a login.</div>'}
+    ${list.map(p=>{
+      const mine=SITES.filter(s=>siteCons(s).some(n=>same(n,p.name)));
+      const owed=sumOf(mine,'balance',p.name), live=!!(p.uid&&p.passHash);
+      const pw=p.pass?(shown[p.id]?esc(p.pass):'•'.repeat(Math.max(4,String(p.pass).length))):(p.passHash?'<span style="color:var(--muted);font-weight:500">hidden — Edit to set a new one</span>':'<span style="color:var(--muted);font-weight:500">not set</span>');
+      return `<div class="card">
+        <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px">
+          <b style="font-size:16px;flex:1">${esc(p.name)}</b>
+          <span class="badge${live?'':' done'}">${live?'Login active':'No login'}</span></div>
+        <div class="tot"><span>User ID</span><b>${p.uid?esc(p.uid):'<span style="color:var(--muted);font-weight:500">not set</span>'}</b></div>
+        <div class="tot"><span>Password</span><span style="display:flex;gap:8px;align-items:center"><b class="num">${pw}</b>
+          ${p.pass?`<button class="chip" data-show="${esc(p.id)}" style="padding:4px 10px">${shown[p.id]?'Hide':'Show'}</button>`:''}</span></div>
+        <div class="tot"><span>Projects · owed to him</span><b class="num">${mine.length} · <span style="color:${owed>0?'var(--red)':'var(--green)'}">${money(owed)}</span></b></div>
+        <div class="tot"><span>Can enter his expenses</span><b style="color:${p.canExp?'var(--green)':'var(--muted)'}">${p.canExp?'Yes':'No'}</b></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:10px">
+          <button class="btn ghost sm" data-edit="${esc(p.id)}">Edit</button>
+          <button class="btn ghost sm" data-share="${esc(p.id)}"${live&&p.pass?'':' disabled'}>Share</button>
+          <button class="btn danger sm" data-rm="${esc(p.id)}">Delete</button>
+        </div></div>`;}).join('')}
+    <div class="hint">Each contractor signs in with his <b>user ID and password</b> and sees only his own work, contract, payments, work done and photos — never your contract value, budget, material purchases, supplier bills or profit. Changing his password or deleting him signs him out at once.</div>`;
+
+  $('pAddBtn').onclick=()=>personSheet(null);
+  $('v-people').querySelectorAll('[data-show]').forEach(b=>b.onclick=()=>{ shown[b.dataset.show]=!shown[b.dataset.show]; renderPeople(); });
+  $('v-people').querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>personSheet(b.dataset.edit));
+  $('v-people').querySelectorAll('[data-share]').forEach(b=>b.onclick=()=>{
+    const p=PEOPLE.find(x=>x.id===b.dataset.share); if(!p) return;
+    const msg=`Entrix House Construction App\n${appLink()}\n\nUser ID: ${p.uid}\nPassword: ${p.pass}`;
+    if(navigator.share) navigator.share({text:msg}).catch(()=>{});
+    else window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+  });
+  $('v-people').querySelectorAll('[data-rm]').forEach(b=>b.onclick=async()=>{
+    if(!arm(b,'Delete','Tap again')) return;
+    const p=PEOPLE.find(x=>x.id===b.dataset.rm);
+    if(LIVE) await W(window.FS.deleteDoc(window.FS.doc(db,COL.people,b.dataset.rm)));
+    else PEOPLE=PEOPLE.filter(x=>x.id!==b.dataset.rm);
+    renderPeople(); toast(`${p?p.name:'Contractor'} deleted — his login no longer works. His projects and entries stay.`);
+  });
+}
+
+/* Add / edit contractor — opens in the bottom sheet */
+function personSheet(id){
+  const p=id?PEOPLE.find(x=>x.id===id):null;
+  $('sheetBody').innerHTML=`
+    <div class="sheet-h"><b>${p?'Edit contractor':'Add contractor'}</b><button id="shX" aria-label="Close">✕</button></div>
+    <div class="field"><label for="cName">Name</label><input id="cName" value="${esc(p?p.name:'')}" placeholder="e.g. Umesh Giri"></div>
+    <div class="row">
+      <div class="field"><label for="cUid">User ID</label><input id="cUid" value="${esc(p?(p.uid||suggestUid(p.name)):'')}" placeholder="e.g. umesh" autocapitalize="none" autocorrect="off" spellcheck="false"></div>
+      <div class="field"><label for="cPass">Password</label><input id="cPass" value="${esc(p&&p.pass?p.pass:'')}" placeholder="${p&&p.passHash&&!p.pass?'type a new one':'min 4 characters'}" autocapitalize="none" autocorrect="off" spellcheck="false"></div>
+    </div>
+    <label class="sw"><input type="checkbox" id="cExp"${p&&p.canExp?' checked':''}><i></i><span>Allow him to enter his own expenses</span></label>
+    <button class="btn" id="cSave" style="margin-top:6px">${p?'Save changes':'Add contractor'}</button>`;
+  $('sheet').classList.add('open');
+  $('shX').onclick=closeSheet;
+  if(!p){ $('cName').addEventListener('input',()=>{ if(!$('cUid').dataset.touched) $('cUid').value=suggestUid($('cName').value); });
+          $('cUid').addEventListener('input',()=>{ $('cUid').dataset.touched='1'; }); }
+  $('cSave').onclick=async()=>{
+    const name=$('cName').value.trim(), uid=$('cUid').value.trim(), pass=$('cPass').value.trim(), canExp=$('cExp').checked;
+    if(!name) return toast('Type a name',true);
+    if(PEOPLE.some(x=>x.id!==(p&&p.id)&&x.role==='contractor'&&String(x.name).toLowerCase()===name.toLowerCase()&&x.uid)) return toast('A contractor with this name already exists',true);
+    if(!validUid(uid)) return toast('User ID: 3–20 letters or numbers, no spaces',true);
+    if(uidTaken(uid,p&&p.id)) return toast('That user ID is already used',true);
+    const uidChanged=!p||(p.uid||'').toLowerCase()!==uid.toLowerCase();
+    if(pass&&pass.length<4) return toast('Password must be at least 4 characters',true);
+    if(!pass&&(uidChanged||!p.passHash)) return toast('Set a password',true);
+    const rec={name,uid,canExp,role:'contractor',pin:''};
+    if(pass){ rec.pass=pass; rec.passHash=await hash(uid,pass); }
+    // an old contractor created from a site (no login yet) with the same name gets the login
+    const target=p||PEOPLE.find(x=>x.role==='contractor'&&String(x.name).toLowerCase()===name.toLowerCase()&&!x.uid);
+    const old=target?target.name:name, hit=old!==name?SITES.filter(x=>worksOf(x).some(w=>w.contractor===old)):[];
+    const renamed=x=>{ const works=worksOf(x).map(w=>w.contractor===old?{...w,contractor:name}:w);
+      return {works,contractors:[...new Set(works.map(w=>w.contractor).filter(Boolean))],contractor:works[0]?works[0].contractor:''}; };
+    if(LIVE){
+      if(target) await W(window.FS.updateDoc(window.FS.doc(db,COL.people,target.id),rec));
+      else await W(window.FS.addDoc(window.FS.collection(db,COL.people),rec));
+      for(const x of hit){ const u=renamed(x); await W(window.FS.updateDoc(window.FS.doc(db,COL.jobs,x.id),u)); Object.assign(x,u); }
+    } else {
+      if(target) Object.assign(target,rec); else PEOPLE.push({id:'x'+Date.now(),...rec});
+      hit.forEach(x=>Object.assign(x,renamed(x)));
+    }
+    closeSheet(); render(); renderPeople();
+    toast(`${name} ${p?'updated':'added'} · ID: ${uid}${pass?' · Password: '+pass:''}`);
+  };
+}
+
+/* ═══════════ 10. Reports (Admin) ═══════════ */
+function repSites(){
+  let l=SITES.slice();
+  if(repCon) l=l.filter(s=>siteCons(s).some(n=>same(n,repCon)));
+  if(repSt!=='all') l=l.filter(s=>(s.status||'active')===repSt);
+  return l;
+}
+const repRows=l=>l.map(s=>({s,c:calc(s.id,null)}));
+const allCons=()=>[...new Set(SITES.flatMap(siteCons))].sort();
+function conRows(sites){
+  const names=repCon?[repCon]:[...new Set(sites.flatMap(siteCons))].sort();
+  return names.map(n=>{ const m=sites.filter(s=>siteCons(s).some(x=>same(x,n))); const k=key=>sumOf(m,key,n);
+    return {n,sites:m.length,works:m.reduce((a,s)=>a+calc(s.id,n).works.length,0),contract:k('contract'),paid:k('paid'),conExp:k('conExp'),balance:k('balance')}; });
+}
+const pl=c=>c.isClient?money(c.profit):'—';
+function renderReports(){
+  if(!isOwner()){ $('v-reports').innerHTML=''; return; }
+  $('v-reports').innerHTML=`
+    <div class="eyebrow">Summary report</div>
+    <div class="card">
+      <div class="row">
+        <div class="field"><label for="rCon">Contractor</label><select id="rCon"><option value="">All</option>${allCons().map(x=>`<option${same(x,repCon)?' selected':''}>${esc(x)}</option>`).join('')}</select></div>
+        <div class="field"><label for="rSt">Projects</label><select id="rSt">${[['all','All'],['active','Ongoing'],['done','Completed']].map(([k,l])=>`<option value="${k}"${k===repSt?' selected':''}>${l}</option>`).join('')}</select></div>
+      </div>
+      <div id="rOut"></div>
+    </div>
+    <div class="two"><button class="btn dark sm" id="rPdf">Summary (PDF)</button><button class="btn ghost sm" id="rCsv">Projects CSV</button></div>
+    <button class="btn ghost sm" id="rCsvE" style="margin-bottom:12px">All entries — expense register (CSV for Excel)</button>`;
+  $('rCon').onchange=e=>{repCon=e.target.value;drawReport();};
+  $('rSt').onchange=e=>{repSt=e.target.value;drawReport();};
+  $('rPdf').onclick=summaryPdf; $('rCsv').onclick=csv; $('rCsvE').onclick=csvEntries;
+  drawReport();
+}
+function drawReport(){
+  const sites=repSites(), R=repRows(sites);
+  if(!R.length){ $('rOut').innerHTML='<div class="empty">No projects match.</div>'; return; }
+  const T=k=>R.reduce((a,r)=>a+r.c[k],0), C=conRows(sites), S=supRows(new Set(sites.map(s=>s.id)));
+  const heads=group(PAYS.filter(p=>p.type==='ourexp'&&p.category&&sites.some(s=>s.id===p.siteId)),p=>p.category);
+  $('rOut').innerHTML=`<div class="tot h" style="margin-top:4px"><span>Project-wise</span></div>
+    <div class="tblwrap"><table class="t" style="min-width:640px"><tr><th>Project</th><th>Contract / budget</th><th>Expenses</th><th>Paid contractors</th><th>Total spent</th><th>₹ / sq ft</th><th>Supplier dues</th><th>Contractor bal.</th><th>Profit</th></tr>
+    ${R.map(({s,c})=>`<tr><td>${esc(s.name)}</td><td class="num">${money(c.value)}</td><td class="num">${money(c.ourExp)}</td><td class="num">${money(c.allPaid)}</td><td class="num"><b>${money(c.spent)}</b></td><td class="num">${c.area?money(c.perSqft):'—'}</td><td class="num">${money(c.supDue)}</td><td class="num">${money(c.balance)}</td><td class="num ${c.profit>=0?'pos':'neg'}">${pl(c)}</td></tr>`).join('')}
+    <tr class="tf"><td>Total</td><td class="num">${money(T('value'))}</td><td class="num">${money(T('ourExp'))}</td><td class="num">${money(T('allPaid'))}</td><td class="num">${money(T('spent'))}</td><td></td><td class="num">${money(T('supDue'))}</td><td class="num">${money(T('balance'))}</td><td class="num">${money(T('profit'))}</td></tr></table></div>
+    ${heads.length?`<div class="tot h" style="margin-top:16px"><span>Head-wise expenses</span></div>
+    <div class="tblwrap"><table class="t" style="min-width:300px"><tr><th>Head</th><th>Amount</th></tr>
+    ${heads.map(([k,v])=>`<tr><td>${esc(k)}</td><td class="num">${money(v)}</td></tr>`).join('')}</table></div>`:''}
+    ${C.length?`<div class="tot h" style="margin-top:16px"><span>Contractor-wise</span></div>
+    <div class="tblwrap"><table class="t"><tr><th>Contractor</th><th>Works</th><th>Contract</th><th>Paid</th><th>His exp.</th><th>Balance</th></tr>
+    ${C.map(r=>`<tr><td>${esc(r.n)}</td><td class="num">${r.works}</td><td class="num">${money(r.contract)}</td><td class="num">${money(r.paid)}</td><td class="num">${money(r.conExp)}</td><td class="num ${r.balance>0?'neg':'pos'}">${money(r.balance)}</td></tr>`).join('')}</table></div>`:''}
+    ${S.length?`<div class="tot h" style="margin-top:16px"><span>Supplier-wise</span></div>
+    <div class="tblwrap"><table class="t"><tr><th>Supplier</th><th>Billed</th><th>On credit</th><th>Paid</th><th>Due</th></tr>
+    ${S.map(r=>`<tr><td>${esc(r.n)}</td><td class="num">${money(r.billed)}</td><td class="num">${money(r.credit)}</td><td class="num">${money(r.paid)}</td><td class="num ${r.due>0?'neg':'pos'}">${money(r.due)}</td></tr>`).join('')}</table></div>`:''}`;
+}
+function saveCsv(out,name){
+  const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+  try{
+    const blob=new Blob(['﻿'+out.map(r=>r.map(q).join(',')).join('\n')],{type:'text/csv'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name;
+    document.body.appendChild(a); a.click(); a.remove(); toast('CSV downloaded');
+  }catch(e){ toast('Download not supported here',true); }
+}
+function csv(){
+  const out=[['Project','Client / owner','Location','Type','Status','Area sq ft','Contract / budget','Expenses & purchases','Paid to contractors','Total spent','Cost per sq ft','Supplier dues','Received','Projected profit','Work','Contractor','Basis','Rate','Unit','Qty','Qty done','Contract','Paid','Balance','Contractor expenses']];
+  repRows(repSites()).forEach(({s,c})=>{
+    const ws=c.works.length?c.works:[null];
+    ws.forEach((w,i)=>out.push([s.name,s.client,s.location,c.isClient?'Client contract':'Own house',s.status||'active',i?'':c.area||'',i?'':c.value,i?'':c.ourExp,i?'':c.allPaid,i?'':c.spent,i?'':(c.area?Math.round(c.perSqft):''),i?'':c.supDue,i?'':c.recd,i?'':(c.isClient?c.profit:''),
+      w?w.work:'',w?w.contractor:'',w?(w.perQty?'Rate wise':'Lump sum'):'',w&&w.perQty?w.rate:'',w&&w.perQty?w.unit:'',w?w.qty||'':'',w?w.done||'':'',w?w.contract:'',w?w.paid:'',w?w.balance:'',w?w.conExp:'']));
+  });
+  saveCsv(out,'entrix-house-projects-'+today()+'.csv');
+}
+/* Every entry of the filtered projects, one row each — opens in Excel */
+function csvEntries(){
+  const ids=new Map(repSites().map(s=>[s.id,s.name]));
+  const rows=byDate(PAYS.filter(p=>ids.has(p.siteId)));
+  if(!rows.length) return toast('No entries to export',true);
+  const out=[['Project','Date','Entry type','Work item','Head','Detail','Qty','Unit','Rate','Amount','Supplier','Bill no.','Payment','Mode','Contractor','Work','Remark','Entered by']];
+  rows.forEach(p=>out.push([ids.get(p.siteId),dmy(p.date),(TYPE[p.type]||{}).a||p.type,p.stage||'',p.category||'',p.item||'',
+    p.qty||'',p.unit||'',p.rate||'',p.type==='progress'?'':p.amount,p.supplier||'',p.bill||'',p.type==='ourexp'?(p.pay==='credit'?'Credit':'Paid'):'',p.mode||'',p.contractor||'',p.work||'',p.note||'',p.by||'']));
+  saveCsv(out,'entrix-house-entries-'+today()+'.csv');
+}
+
+/* ═══════════ 11. PDFs ═══════════ */
+const NAVY='#0A1F44';
+const pdfHead=(title,sub)=>`<div style="border-bottom:2px solid ${NAVY};padding-bottom:8px;margin-bottom:14px">
+  <div style="font-size:19px;font-weight:800;letter-spacing:.16em;color:${NAVY}">ENTRIX INNOVATION</div>
+  <div style="font-size:13px;font-weight:700;margin-top:4px">${title}</div>
+  <div style="font-size:10px;color:#555;margin-top:2px">${sub} · Nagpur · entrix.co.in · ${dmy(today())}</div></div>`;
+const pdfLine=(l,v,b)=>`<tr><td style="padding:6px 0${b?`;border-top:1.5px solid ${NAVY};font-weight:800`:''}">${l}</td><td style="padding:6px 0${b?`;border-top:1.5px solid ${NAVY};font-weight:800`:''};text-align:right">${money(v)}</td></tr>`;
+const pdfText=(l,v)=>`<tr><td style="padding:5px 0">${l}</td><td style="padding:5px 0;text-align:right">${v}</td></tr>`;
+const pdfSub=x=>`<div style="font-size:12px;font-weight:800;color:${NAVY};margin:18px 0 4px;padding-top:8px;border-top:1px solid #ccc">${x}</div>`;
+function pdfTable(title,heads,rows,foot){
+  const th=heads.map((h,i)=>`<th style="text-align:${i===heads.length-1?'right':'left'};padding:5px 6px">${h}</th>`).join('');
+  return `<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:${NAVY};margin:16px 0 6px">${title}</div>
+  <table style="width:100%;border-collapse:collapse;font-size:11px"><tr style="background:${NAVY};color:#fff">${th}</tr>
+  ${rows.length?rows.map(r=>`<tr>${r.map((x,i)=>`<td style="padding:4px 6px;border-bottom:1px solid #ddd;text-align:${i===r.length-1?'right':'left'}">${x}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${heads.length}" style="padding:6px;color:#666">None.</td></tr>`}
+  ${foot?`<tr><td colspan="${heads.length-1}" style="padding:6px;font-weight:800;border-top:1.5px solid ${NAVY}">${foot[0]}</td><td style="padding:6px;text-align:right;font-weight:800;border-top:1.5px solid ${NAVY}">${foot[1]}</td></tr>`:''}</table>`;
+}
+const byDate=(rows)=>rows.slice().sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:(a.createdAt||0)-(b.createdAt||0));
+const printNow=()=>setTimeout(()=>window.print(),150);
+
+/* ── Real PDF files: made on the phone, then Share on WhatsApp / Download / Print ── */
+const H2P='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+let h2pLoad=null, pdfJob=null;
+function loadH2P(){
+  if(window.html2pdf) return Promise.resolve();
+  if(!h2pLoad) h2pLoad=new Promise((res,rej)=>{ const s=document.createElement('script'); s.src=H2P; s.onload=res;
+    s.onerror=()=>{ h2pLoad=null; s.remove(); rej(new Error('PDF maker needs internet — try again')); }; document.head.appendChild(s); });
+  return h2pLoad;
+}
+async function makePdf(html){
+  await loadH2P();
+  /* html2canvas draws blank/shifted pages when the phone is scrolled or narrower than
+     the page, so: render in our own 720px box at the very top, scroll to top while
+     drawing, then put the scroll back. */
+  const y=window.scrollY;
+  const box=document.createElement('div');
+  box.style.cssText='position:absolute;left:0;top:0;width:680px;z-index:-1;pointer-events:none;background:#fff';
+  box.innerHTML=`<div style="width:676px;padding:2px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;color:#16202E;background:#fff">${html}</div>`;
+  document.body.appendChild(box);
+  window.scrollTo(0,0);
+  try{
+    return await window.html2pdf().set({
+      margin:[10,10,12,10], image:{type:'jpeg',quality:.9},
+      html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff',logging:false,scrollX:0,scrollY:0,windowWidth:720},
+      jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
+      pagebreak:{mode:['css','legacy'],avoid:['tr','img']}
+    }).from(box.firstElementChild).outputPdf('blob');
+  } finally { box.remove(); window.scrollTo(0,y); }
+}
+function saveBlob(blob,name){
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),30000);
+}
+function pdfReady(name,title){
+  const file=String(name||'ENTRIX').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')+'.pdf';
+  const job={file,title,blob:null}; pdfJob=job;
+  $('sheetBody').innerHTML=`
+    <div class="sheet-h"><b>${esc(title)}</b><button id="shX" aria-label="Close">✕</button></div>
+    <div class="pdfstat" id="pdfStat"><span class="spin"></span>Making PDF…</div>
+    <button class="wa" id="pdfWa" style="width:100%;margin-bottom:9px" disabled>${WA_ICON} Share on WhatsApp</button>
+    <div class="two" style="margin-bottom:0">
+      <button class="btn ghost sm" id="pdfDl" disabled>⬇ Download PDF</button>
+      <button class="btn ghost sm" id="pdfPr">🖨 Print</button></div>`;
+  $('sheet').classList.add('open');
+  $('shX').onclick=closeSheet;
+  $('pdfPr').onclick=()=>{ closeSheet(); printNow(); };
+  makePdf($('report').innerHTML).then(blob=>{
+    if(pdfJob!==job||!$('pdfWa')) return;
+    job.blob=blob;
+    $('pdfStat').innerHTML=`✓ Ready · ${esc(file)} · ${Math.max(1,Math.round(blob.size/1024))} KB`; $('pdfStat').classList.add('ok');
+    $('pdfWa').disabled=false; $('pdfDl').disabled=false;
+  }).catch(e=>{ if(pdfJob!==job||!$('pdfStat')) return;
+    $('pdfStat').textContent='Could not make PDF: '+(e.message||e)+' · you can still Print → Save as PDF'; $('pdfStat').classList.add('bad'); });
+  $('pdfDl').onclick=()=>{ if(job.blob){ saveBlob(job.blob,file); toast('PDF saved to Downloads'); } };
+  $('pdfWa').onclick=async()=>{
+    if(!job.blob) return;
+    const f=new File([job.blob],file,{type:'application/pdf'}), text='ENTRIX Innovation — '+title;
+    try{
+      if(navigator.canShare&&navigator.canShare({files:[f]})){ await navigator.share({files:[f],title,text}); closeSheet(); return; }
+    }catch(e){ if(e&&e.name==='AbortError') return; }
+    saveBlob(job.blob,file);
+    window.open('https://wa.me/?text='+encodeURIComponent(text+'\n(PDF attached from Downloads)'),'_blank');
+    toast('PDF downloaded — attach it in WhatsApp from Downloads');
+  };
+}
+const footer=()=>`<div style="margin-top:26px;font-size:10px;color:#666;border-top:1px solid #bbb;padding-top:7px">ENTRIX Innovation, Nagpur · entrix.co.in · GSTIN 27APMPP1315A1Z9 · Prepared by ${esc(ME.name)} · App v${APP_VERSION}</div>`;
+const sumAmt=l=>money(l.reduce((a,b)=>a+(Number(b.amount)||0),0));
+const lstRows=l=>l.map(p=>[dmy(p.date),esc(p.note||'—')+(p.category?` (${esc(p.category)})`:''),esc(p.mode||''),money(p.amount)]);
+
+/* Admin: full project statement — summary, stage/head/material break-up, contractors, suppliers, expense register */
+function projectStatement(id){
+  const s=site(id), c=calc(id,null), rows=byDate(PAYS.filter(p=>p.siteId===id));
+  const of=(ty,w)=>rows.filter(p=>ty.includes(p.type)&&(!w||wid(p)===w.id));
+  const H=['Date','Detail','Mode','Amount'], ex=of(['ourexp']), S=supRows(new Set([id])), M=matRows(id);
+  const two=(t,l)=>l.length?pdfTable(t,[t.split('-')[0],'Amount'],l.map(([k,v])=>[esc(k),money(v)]),['Total',money(listSum(l))]):'';
+  const WI=workItems(id);
+  const sheetRows=WI.flatMap((g,i)=>[[`<b>${i+1}</b>`,`<b>${esc(g.n)}</b>`,'','',`<b>${money(g.total)}</b>`],
+    ...g.lines.map(p=>['',esc(p.item||g.n)+(p.note?`<br><span style="color:#666">${esc(p.note)}</span>`:''),esc(qtyTxt(p)),
+      esc([dmy(p.date),p.supplier,p.bill?'Bill '+p.bill:'',p.pay==='credit'?'CREDIT':''].filter(Boolean).join(' · ')),money(p.amount)])]);
+  $('report').innerHTML=pdfHead('Project Statement — '+esc(s.name), esc([s.client,s.location,c.area?qf(c.area)+' sq ft':'',c.isClient?'Client contract':'Own house'].filter(Boolean).join(' · ')))+`
+    <table style="width:100%;border-collapse:collapse;font-size:12px">
+      ${pdfLine(c.isClient?'Contract value':'Budget',c.value)}
+      ${pdfLine('Cost sheet total (work items)',c.ourExp)}
+      ${pdfLine('Paid to contractors',c.allPaid)}
+      ${pdfLine('Total spent so far',c.spent,true)}
+      ${c.area?pdfText('Cost per sq ft',money(c.perSqft)+' on '+qf(c.area)+' sq ft'):''}
+      ${pdfLine('Contractor contracts (total)',c.contract)}
+      ${pdfLine('Balance on contractor contracts',c.balance)}
+      ${pdfLine('Supplier dues (unpaid credit bills)',c.supDue)}
+      ${c.isClient?pdfLine('Projected profit',c.profit,true)+pdfLine('Received from client',c.recd)+pdfLine('Still to receive from client',c.clientDue,true)
+                  :pdfLine('Budget left',c.left,true)+(c.recd?pdfLine('Funds received',c.recd):'')}
+    </table>
+    ${pdfTable('Cost sheet',['#','Work item / detail','Qty × rate','Date · supplier','Amount'],sheetRows,['Total',money(c.ourExp)])}
+    ${two('Head-wise cost',byHead(id))}
+    ${M.length?pdfTable('Material & quantity summary',['Item','Qty','Avg rate','Amount'],M.map(r=>[esc(r.item),qf(r.qty)+' '+esc(r.unit),rs(r.amt/r.qty),money(r.amt)])):''}
+    ${S.length?pdfTable('Suppliers',['Supplier','Billed','On credit','Paid','Due'],S.map(r=>[esc(r.n),money(r.billed),money(r.credit),money(r.paid),money(r.due)]),['Total due',money(c.supDue)]):''}
+    ${c.works.map(w=>pdfSub(esc(workLabel(w)))+`
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        ${w.perQty?pdfText('Rate',`${rs(w.rate)} / ${esc(w.unit)} × ${qf(w.qty)}`):''}
+        ${w.qty?pdfText('Work done',`${qf(w.done)} of ${qf(w.qty)} ${esc(w.unit)}`):''}
+        ${pdfLine('Contract',w.contract)}${pdfLine('Paid / advances',w.paid)}${pdfLine('Balance payable',w.balance,true)}
+        ${w.conExp?pdfLine('His expenses (own account)',w.conExp):''}
+      </table>
+      ${pdfTable('Payments & advances',H,lstRows(of(['payment','advance'],w)),['Total',sumAmt(of(['payment','advance'],w))])}
+      ${of(['expense'],w).length?pdfTable('His expenses',H,lstRows(of(['expense'],w)),['Total',sumAmt(of(['expense'],w))]):''}
+      ${of(['progress'],w).length?pdfTable('Work done log',['Date','Detail','By','Qty'],of(['progress'],w).map(p=>[dmy(p.date),esc(p.note||'—'),esc(p.by||''),qf(p.qty)+' '+esc(p.unit||w.unit)]),['Total',qf(w.done)+' '+esc(w.unit)]):''}`).join('')}
+    ${of(['suppay']).length?pdfTable('Payments to suppliers',['Date','Supplier','Mode / remark','Amount'],of(['suppay']).map(p=>[dmy(p.date),esc(p.supplier||''),esc([p.mode,p.note].filter(Boolean).join(' · ')),money(p.amount)]),['Total',sumAmt(of(['suppay']))]):''}
+    ${of(['received']).length||c.isClient?pdfTable(c.isClient?'Received from client':'Funds received',H,lstRows(of(['received'])),['Total',sumAmt(of(['received']))]):''}
+    ${footer()}`;
+  pdfReady('Project-'+s.name,'Project Statement — '+s.name);
+}
+
+/* Contractor statement for ONE contractor on this project — no contract value, budget, profit or company expenses */
+function statement(id,who){
+  who=isCon()?ME.name:who;
+  const s=site(id), c=calc(id,who), ids=new Set(c.works.map(w=>w.id));
+  const rows=byDate(PAYS.filter(p=>p.siteId===id&&CON_TYPES.includes(p.type)&&ids.has(wid(p))));
+  const many=c.works.length>1, wName=p=>{ const w=c.works.find(x=>x.id===wid(p)); return w?esc(w.work||''):''; };
+  const pays=rows.filter(p=>p.type==='payment'||p.type==='advance'), prog=rows.filter(p=>p.type==='progress');
+  $('report').innerHTML=pdfHead('Contractor Statement — '+esc(who||''), esc(s.name))+`
+    <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:6px">
+      ${c.works.map(w=>`${pdfLine(`${esc(w.work||'Work')}${w.perQty?` — ${rs(w.rate)} × ${qf(w.qty)} ${esc(w.unit)}`:' (lump sum)'}`,w.contract)}
+        ${w.qty?pdfText('&nbsp;&nbsp;Work done',`${qf(w.done)} of ${qf(w.qty)} ${esc(w.unit)}${w.perQty?' · value '+money(w.earned):''}`):''}`).join('')}
+      ${pdfLine('Total contract',c.contract,true)}
+      ${pdfLine('Total received',c.paid)}
+      ${pdfLine('Balance payable',c.balance,true)}
+      ${c.works.some(w=>w.perQty)?pdfLine('Due for work done',c.dueNow):''}
+    </table>
+    ${pdfTable('Payments received',many?['Date','Work','Mode / remark','Amount']:['Date','Mode','Remark','Amount'],
+      pays.map(p=>many?[dmy(p.date),wName(p),esc([p.mode,p.note].filter(Boolean).join(' · ')),money(p.amount)]:[dmy(p.date),esc(p.mode||''),esc(p.note||''),money(p.amount)]),['Total received',money(c.paid)])}
+    ${prog.length?pdfTable('Work done',['Date',many?'Work':'Remark','By','Qty'],prog.map(p=>[dmy(p.date),many?wName(p):esc(p.note||''),esc(p.by||''),qf(p.qty)+' '+esc(p.unit||'')])):''}
+    <div style="margin-top:28px;display:flex;justify-content:space-between;font-size:10px">
+      <div>Received &amp; found correct<br><br><br>____________________<br>${esc(who||'Contractor')}</div>
+      <div style="text-align:right">For ENTRIX Innovation<br><br><br>____________________<br>Authorised signatory</div>
+    </div>`;
+  pdfReady('Statement-'+(who||'')+'-'+s.name,'Contractor Statement — '+(who||'')+' — '+s.name);
+}
+
+/* Admin: all-projects summary */
+function summaryPdf(){
+  const sites=repSites(), R=repRows(sites);
+  if(!R.length) return toast('No projects to report',true);
+  const T=k=>R.reduce((a,r)=>a+r.c[k],0), C=conRows(sites), S=supRows(new Set(sites.map(s=>s.id)));
+  const heads=group(PAYS.filter(p=>p.type==='ourexp'&&p.category&&sites.some(s=>s.id===p.siteId)),p=>p.category);
+  $('report').innerHTML=pdfHead('House Construction — Summary Report', esc((repCon?'Contractor: '+repCon:'All contractors')+' · '+(repSt==='all'?'all projects':repSt==='done'?'completed projects':'ongoing projects')))+`
+    <table style="width:100%;border-collapse:collapse;font-size:12px">
+      ${pdfLine('Contracts / budgets',T('value'))}
+      ${pdfLine('Expenses & purchases',T('ourExp'))}
+      ${pdfLine('Paid to contractors',T('allPaid'))}
+      ${pdfLine('Total spent so far',T('spent'),true)}
+      ${pdfLine('Supplier dues (unpaid credit bills)',T('supDue'))}
+      ${pdfLine('Balance on contractor contracts',T('balance'))}
+      ${R.some(r=>r.c.isClient)?pdfLine('Received from clients',R.filter(r=>r.c.isClient).reduce((a,r)=>a+r.c.recd,0))+pdfLine('Still to receive from clients',T('clientDue'))+pdfLine('Projected profit (client projects)',T('profit'),true):''}
+    </table>
+    ${pdfTable('Project-wise',['Project','Contract / budget','Expenses','Paid contractors','Supplier dues','Profit','Total spent'],
+      R.map(({s,c})=>[esc(s.name),money(c.value),money(c.ourExp),money(c.allPaid),money(c.supDue),pl(c),money(c.spent)]),['Total',money(T('spent'))])}
+    ${heads.length?pdfTable('Head-wise expenses',['Head','Amount'],heads.map(([k,v])=>[esc(k),money(v)]),['Total',money(listSum(heads))]):''}
+    ${C.length?pdfTable('Contractor-wise',['Contractor','Projects','Works','Contract','Paid','His exp.','Balance'],
+      C.map(r=>[esc(r.n),r.sites,r.works,money(r.contract),money(r.paid),money(r.conExp),money(r.balance)])):''}
+    ${S.length?pdfTable('Supplier-wise',['Supplier','Billed','On credit','Paid','Due'],S.map(r=>[esc(r.n),money(r.billed),money(r.credit),money(r.paid),money(r.due)])):''}
+    ${footer()}`;
+  pdfReady('House-Summary-'+today(),'House Construction Summary — '+dmy(today()));
+}
+
+/* ═══════════ 12. Boot ═══════════ */
+function render(){
+  renderSites();
+  if($('v-detail').classList.contains('active')&&openId) renderDetail();
+  if($('v-people').classList.contains('active')) renderPeople();
+  if($('v-reports').classList.contains('active')&&!document.activeElement.matches('select')) renderReports();
+}
+$('verTag').textContent='v'+APP_VERSION; document.title='Entrix House Construction App v'+APP_VERSION;
+renderGate(); tryAuto(); initDB();
+</script>
+</body>
+</html>
